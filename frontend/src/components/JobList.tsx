@@ -5,7 +5,7 @@ interface JobListProps {
   jobs: Job[]
 }
 
-const JobList = ({ jobs }: JobListProps) => {
+ const JobList = ({ jobs }: JobListProps) => {
   if (jobs.length === 0) {
     return (
       <div className="text-center py-12">
