@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobFormAutoFiller</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>JobFormAutoFiller</h1>
+            <div class="status-indicator" id="statusIndicator">
+                <span class="status-dot"></span>
+                <span class="status-text">Ready</span>
+            </div>
+        </header>
+
+        <div class="section">
+            <h3>API Configuration</h3>
+            <div class="form-group">
+                <label for="apiProvider">LLM Provider:</label>
+                <select id="apiProvider">
+                    <option value="openai">OpenAI GPT-4o-mini</option>
+                    <option value="xai">xAI Grok</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="apiKey">API Key:</label>
+                <input type="password" id="apiKey" placeholder="Enter your API key">
+            </div>
+            <button id="saveConfig" class="btn btn-primary">Save Configuration</button>
+        </div>
+
+        <div class="section">
+            <h3>Resume/CV Data</h3>
+            <div class="form-group">
+                <label for="resumeData">Your Resume/CV (paste text):</label>
+                <textarea id="resumeData" rows="4" placeholder="Paste your resume/CV text here for personalized answers..."></textarea>
+            </div>
+            <button id="saveResume" class="btn btn-secondary">Save Resume</button>
+        </div>
+
+        <div class="section">
+            <h3>Actions</h3>
+            <div class="button-group">
+                <button id="scrapeJob" class="btn btn-action">
+                    <span class="btn-icon">📄</span>
+                    Scrape Job Page
+                </button>
+                <button id="autoFillForm" class="btn btn-action">
+                    <span class="btn-icon">✏️</span>
+                    Auto-Fill Form
+                </button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Stored Jobs</h3>
+            <div id="storedJobs" class="jobs-list">
+                <p class="no-jobs">No jobs stored yet</p>
+            </div>
+            <button id="clearJobs" class="btn btn-danger">Clear All Jobs</button>
+        </div>
+
+        <div class="section">
+            <h3>Logs</h3>
+            <div id="logs" class="logs-container">
+                <p class="no-logs">No logs yet</p>
+            </div>
+            <button id="clearLogs" class="btn btn-secondary">Clear Logs</button>
+        </div>
+
+        <footer class="footer">
+            <p class="disclaimer">
+                ⚠️ Use responsibly. Respect website terms of service and rate limits.
+            </p>
+        </footer>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

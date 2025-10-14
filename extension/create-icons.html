@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Icon Generator for JobFormAutoFiller</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .icon { margin: 10px; display: inline-block; }
+        canvas { border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>Icon Generator for JobFormAutoFiller</h1>
+    <p>Right-click on each icon and "Save image as..." to save with the correct filename.</p>
+    
+    <div class="icon">
+        <h3>16x16</h3>
+        <canvas id="icon16" width="16" height="16"></canvas>
+    </div>
+    
+    <div class="icon">
+        <h3>32x32</h3>
+        <canvas id="icon32" width="32" height="32"></canvas>
+    </div>
+    
+    <div class="icon">
+        <h3>48x48</h3>
+        <canvas id="icon48" width="48" height="48"></canvas>
+    </div>
+    
+    <div class="icon">
+        <h3>128x128</h3>
+        <canvas id="icon128" width="128" height="128"></canvas>
+    </div>
+
+    <script>
+        function createIcon(canvasId, size) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            // Background
+            ctx.fillStyle = '#3b82f6';
+            ctx.fillRect(0, 0, size, size);
+            
+            // Document icon
+            const docSize = size * 0.6;
+            const docX = (size - docSize) / 2;
+            const docY = (size - docSize) / 2;
+            
+            ctx.fillStyle = 'white';
+            ctx.fillRect(docX, docY, docSize, docSize);
+            
+            // Document lines
+            ctx.fillStyle = '#3b82f6';
+            const lineHeight = docSize * 0.1;
+            const lineSpacing = docSize * 0.15;
+            
+            for (let i = 0; i < 3; i++) {
+                const lineY = docY + (i + 1) * lineSpacing;
+                ctx.fillRect(docX + docSize * 0.1, lineY, docSize * 0.6, lineHeight);
+            }
+            
+            // Pen icon
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = size * 0.05;
+            ctx.beginPath();
+            ctx.moveTo(docX + docSize * 0.8, docY + docSize * 0.2);
+            ctx.lineTo(docX + docSize * 0.9, docY + docSize * 0.1);
+            ctx.stroke();
+        }
+        
+        // Create all icons
+        createIcon('icon16', 16);
+        createIcon('icon32', 32);
+        createIcon('icon48', 48);
+        createIcon('icon128', 128);
+    </script>
+</body>
+</html>
