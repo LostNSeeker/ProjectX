@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -84,6 +85,11 @@ export default function RootLayout({
       </head>
       <body className="antialiased">
         {children}
+        {/* Global cursor canvas overlay */}
+        <canvas id="canvas" className="pointer-events-none fixed inset-0 z-[9999]" style={{ width: "100vw", height: "100vh" }} />
+        <Script id="init-global-canvas" strategy="afterInteractive">
+          {`window.renderInteractiveCanvas && window.renderInteractiveCanvas();`}
+        </Script>
       </body>
     </html>
   );

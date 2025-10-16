@@ -1,24 +1,28 @@
 "use client";
 
 import { Dock, DockIcon, DockItem, DockLabel } from "@/components/ui/dock";
-import { SplineScene } from "@/components/ui/splite";
+import "@/components/ui/canvas";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 import { Calendar } from "@/components/ui/calendar";
 import { ParticleTextEffect } from "@/components/ui/particle-text-effect";
 import { AnimatedTestimonials } from "@/components/ui/animated-testimonials";
-import { ShuffleHero } from "@/components/ui/shuffle-grid";
 import DatabaseWithRestApi from "@/components/ui/database-with-rest-api";
+import { ShuffleHero } from "@/components/ui/shuffle-grid";
 import { ContainerScroll } from "@/components/ui/container-scroll-animation";
 import { WorldMap } from "@/components/ui/world-map";
 import InteractiveSelector from "@/components/ui/interactive-selector";
 import { Button } from "@/components/ui/button";
 import { CanvasBackground } from "@/components/ui/canvas-background";
+import { SplineSceneBasic } from "@/components/ui/demo";
+import WaveDemo from "@/components/ui/wave-demo";
 import { Home, Zap, Users, MessageCircle, Mail, ArrowRight, Check } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
 export default function HomePage() {
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const router = useRouter();
+  const [isSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -35,10 +39,7 @@ export default function HomePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate form submission
-    setTimeout(() => {
-      setIsSubmitted(true);
-    }, 1000);
+    router.push("/processing");
   };
 
   const jobRoles = [
@@ -118,187 +119,22 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_70%)]" />
         
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center">
-          {/* Text Content */}
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center lg:text-left"
-          >
-            <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight">
-              <span className="bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent">
-                Feel the Power:
-              </span>
-              <br />
-              <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Land Your Dream
-              </span>
-              <br />
-              <span className="bg-gradient-to-r from-green-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-                Remote Full Stack Job!
-              </span>
-            </h1>
-            
-            <p className="text-xl text-gray-300 mb-8 max-w-3xl">
-              Join the waitlist for <span className="text-blue-400 font-semibold">RemoteFlow</span>, the ultimate tool for IT pros to discover remote opportunities. 
-              <br />
-              <span className="text-lg text-gray-400">Code from your couch, conquer the IT world!</span>
-            </p>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+         
 
-            <Button 
-              onClick={() => scrollToSection("#waitlist")}
-              className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-4 rounded-full font-semibold text-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-blue-500/25"
-            >
-              Join Waitlist
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
-          </motion.div>
-
-          {/* 3D Robot */}
+          {/* 3D Robot Component */}
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="h-[600px] w-full"
+            className="max-w-6xl mx-auto"
           >
-            <div className="w-full h-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl flex items-center justify-center">
-              <div className="text-center">
-                <div className="text-6xl mb-4">🤖</div>
-                <h3 className="text-2xl font-bold text-white mb-2">3D Robot</h3>
-                <p className="text-gray-300">Interactive 3D visualization</p>
-              </div>
-            </div>
+            <SplineSceneBasic />
           </motion.div>
         </div>
       </section>
 
-      {/* Waitlist Form with Background Beams */}
-      <section id="waitlist" className="py-20 relative overflow-hidden">
-        <BackgroundBeams className="bg-black" />
-        
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-4xl lg:text-5xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Reserve Your Spot
-              </span>
-            </h2>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              Join thousands of developers who are already on the waitlist. 
-              Be the first to experience the future of remote job hunting!
-            </p>
-          </motion.div>
-
-          {isSubmitted ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="max-w-md mx-auto text-center"
-            >
-              <div className="w-20 h-20 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Check className="w-10 h-10 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-4">
-                You&apos;re in! 🎉
-              </h3>
-              <p className="text-gray-300 mb-6">
-                Get ready to code remotely like a pro! We&apos;ll notify you when RemoteFlow launches.
-              </p>
-            </motion.div>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="max-w-md mx-auto"
-            >
-              <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-8 border border-white/10 shadow-2xl">
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200"
-                      placeholder="Enter your full name"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200"
-                      placeholder="your.email@example.com"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Job Role
-                    </label>
-                    <select
-                      value={formData.jobRole}
-                      onChange={(e) => setFormData({...formData, jobRole: e.target.value})}
-                      className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200"
-                      required
-                    >
-                      <option value="">Select your role</option>
-                      {jobRoles.map((role) => (
-                        <option key={role} value={role} className="bg-gray-800">
-                          {role}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="flex items-center space-x-3">
-                    <input
-                      type="checkbox"
-                      id="remoteOnly"
-                      checked={formData.remoteOnly}
-                      onChange={(e) => setFormData({...formData, remoteOnly: e.target.checked})}
-                      className="w-5 h-5 text-blue-500 bg-white/5 border-white/20 rounded focus:ring-blue-500/50 focus:ring-2"
-                    />
-                    <label htmlFor="remoteOnly" className="text-sm text-gray-300">
-                      I&apos;m only interested in remote positions
-                    </label>
-                  </div>
-
-                  <Button
-                    type="submit"
-                    className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 rounded-lg font-semibold text-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-blue-500/25"
-                  >
-                    Reserve My Spot!
-                    <ArrowRight className="w-5 h-5 ml-2" />
-                  </Button>
-                </form>
-
-                <p className="text-center text-sm text-gray-400 mt-6">
-                  Join 2,500+ developers already on the waitlist
-                </p>
-              </div>
-            </motion.div>
-          )}
-        </div>
-      </section>
+      {/* Waitlist moved near footer; placeholder removed here */}
 
       {/* Features Section with Particle Text */}
       <section id="features" className="py-20 relative overflow-hidden">
@@ -307,7 +143,7 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(139,92,246,0.1),transparent_50%)]" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <ParticleTextEffect words={["Why", "Join", "RemoteFlow?"]} />
+          <ParticleTextEffect words={["Welcome to", "Elite Section", "of Internet"]} />
           
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -319,91 +155,11 @@ export default function HomePage() {
             Experience the future of remote job hunting with our cutting-edge platform designed specifically for IT professionals.
           </motion.p>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                title: "Discover Remote IT Jobs",
-                description: "Access thousands of curated remote positions from top tech companies worldwide.",
-                icon: "🔍"
-              },
-              {
-                title: "AI-Powered Matching", 
-                description: "Our advanced AI analyzes your skills and preferences to find the perfect match.",
-                icon: "⚡"
-              },
-              {
-                title: "Global Opportunities",
-                description: "Work from anywhere with companies across the US, EU, Asia, and beyond.",
-                icon: "🌍"
-              }
-            ].map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="bg-black/40 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-white/20 transition-all duration-300 text-center"
-              >
-                <div className="text-4xl mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-bold text-white mb-4">{feature.title}</h3>
-                <p className="text-gray-300">{feature.description}</p>
-              </motion.div>
-            ))}
-          </div>
+          
         </div>
       </section>
 
-      {/* Plan Your Remote Career - Calendar Section */}
-      <section className="py-20 relative overflow-hidden w-full">
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-900 via-black to-gray-900" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.1),transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(139,92,246,0.1),transparent_50%)]" />
-
-        <div className="w-full max-w-none mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl lg:text-5xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Plan Your Remote Career
-              </span>
-            </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Visualize your journey to remote work success. Track application timelines and early access dates.
-            </p>
-          </motion.div>
-
-          <div className="w-full flex justify-center">
-            <div className="bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl p-8 border border-white/10 shadow-2xl">
-              <Calendar />
-            </div>
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            viewport={{ once: true }}
-            className="text-center mt-12"
-          >
-            <p className="text-lg text-gray-300 mb-6">
-              Interested? Join the waitlist to get early access!
-            </p>
-            <Button 
-              onClick={() => scrollToSection("#waitlist")}
-              className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-4 rounded-full font-semibold text-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-blue-500/25"
-            >
-              Join Waitlist for Early Access
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
-          </motion.div>
-        </div>
-      </section>
+      {/* Calendar moved into Waitlist; placeholder removed here */}
 
       {/* Testimonials */}
       <section id="testimonials" className="py-20 relative overflow-hidden">
@@ -430,47 +186,11 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Companies Grid */}
+      {/* Companies Using the Software */}
       <section className="py-20 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl lg:text-5xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Trusted by Top Tech Teams
-              </span>
-            </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Join thousands of developers who work at the world&apos;s most innovative companies.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              "Google", "Microsoft", "Amazon", "Meta", 
-              "Apple", "Netflix", "Spotify", "Airbnb"
-            ].map((company, index) => (
-              <motion.div
-                key={company}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 border border-white/10 hover:border-blue-400/50 transition-all duration-300"
-              >
-                <div className="text-center">
-                  <div className="text-2xl mb-2">🏢</div>
-                  <h3 className="font-semibold text-white">{company}</h3>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          <ShuffleHero />
         </div>
       </section>
 
@@ -619,6 +339,156 @@ export default function HomePage() {
 
           <InteractiveSelector />
         </div>
+      </section>
+
+      {/* Calendar + Waitlist (combined) just above Footer */}
+      <section id="waitlist" className="py-20 relative overflow-hidden">
+        <BackgroundBeams className="bg-black" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.1),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(139,92,246,0.1),transparent_50%)]" />
+
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Calendar header */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                Plan Your Remote Career
+              </span>
+            </h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Visualize your journey to remote work success. Track application timelines and early access dates.
+            </p>
+          </motion.div>
+
+          {/* Calendar + Form in one row */}
+          <div className="grid md:grid-cols-2 gap-10 items-start">
+            {/* Calendar */}
+            <div className="w-full flex justify-center">
+              <div className="bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl p-6 border border-white/10 shadow-2xl transform scale-95">
+                <Calendar />
+                <div className="mt-6 flex justify-center">
+                  <Button onClick={() => router.push('/processing')} className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-200">
+                    Book
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Waitlist form */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              viewport={{ once: true }}
+              className="w-full"
+            >
+              {isSubmitted ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="max-w-md mx-auto text-center"
+                >
+                  <div className="w-20 h-20 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Check className="w-10 h-10 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-4">
+                    You&apos;re in! 🎉
+                  </h3>
+                  <p className="text-gray-300 mb-6">
+                    Get ready to code remotely like a pro! We&apos;ll notify you when RemoteFlow launches.
+                  </p>
+                </motion.div>
+              ) : (
+                <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-8 border border-white/10 shadow-2xl max-w-md mx-auto">
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Full Name
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.name}
+                        onChange={(e) => setFormData({...formData, name: e.target.value})}
+                        className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200"
+                        placeholder="Enter your full name"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Email Address
+                      </label>
+                      <input
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({...formData, email: e.target.value})}
+                        className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200"
+                        placeholder="your.email@example.com"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Job Role
+                      </label>
+                      <select
+                        value={formData.jobRole}
+                        onChange={(e) => setFormData({...formData, jobRole: e.target.value})}
+                        className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200"
+                        required
+                      >
+                        <option value="">Select your role</option>
+                        {jobRoles.map((role) => (
+                          <option key={role} value={role} className="bg-gray-800">
+                            {role}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        id="remoteOnly"
+                        checked={formData.remoteOnly}
+                        onChange={(e) => setFormData({...formData, remoteOnly: e.target.checked})}
+                        className="w-5 h-5 text-blue-500 bg-white/5 border-white/20 rounded focus:ring-blue-500/50 focus:ring-2"
+                      />
+                      <label htmlFor="remoteOnly" className="text-sm text-gray-300">
+                        I&apos;m only interested in remote positions
+                      </label>
+                    </div>
+
+                    <Button
+                      type="submit"
+                      className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 rounded-lg font-semibold text-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-blue-500/25"
+                    >
+                      Reserve My Spot!
+                      <ArrowRight className="w-5 h-5 ml-2" />
+                    </Button>
+                  </form>
+
+                  <p className="text-center text-sm text-gray-400 mt-6">
+                    Join 2,500+ developers already on the waitlist
+                  </p>
+                </div>
+              )}
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Wave section just above the Footer */}
+      <section className="relative overflow-hidden">
+        <WaveDemo />
       </section>
 
       {/* Footer with Canvas */}

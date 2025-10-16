@@ -22,7 +22,7 @@ interface DatabaseWithRestApiProps {
   lightColor?: string;
 }
 
-const DatabaseWithRestApi = ({
+const  DatabaseWithRestApi = ({
   className,
   circleText,
   badgeTexts,
@@ -51,10 +51,10 @@ const DatabaseWithRestApi = ({
           strokeDasharray="100 100"
           pathLength="100"
         >
-          <path d="M 31 10 v 15 q 0 5 5 5 h 59 q 5 0 5 5 v 10" />
-          <path d="M 77 10 v 10 q 0 5 5 5 h 13 q 5 0 5 5 v 10" />
-          <path d="M 124 10 v 10 q 0 5 -5 5 h -14 q -5 0 -5 5 v 10" />
-          <path d="M 170 10 v 15 q 0 5 -5 5 h -60 q -5 0 -5 5 v 10" />
+          <path id="db-path-1" d="M 31 10 v 15 q 0 5 5 5 h 59 q 5 0 5 5 v 10" />
+          <path id="db-path-2" d="M 77 10 v 10 q 0 5 5 5 h 13 q 5 0 5 5 v 10" />
+          <path id="db-path-3" d="M 124 10 v 10 q 0 5 -5 5 h -14 q -5 0 -5 5 v 10" />
+          <path id="db-path-4" d="M 170 10 v 15 q 0 5 -5 5 h -60 q -5 0 -5 5 v 10" />
           {/* Animation For Path Starting */}
           <animate
             attributeName="stroke-dashoffset"
@@ -75,7 +75,11 @@ const DatabaseWithRestApi = ({
             cy="0"
             r="12"
             fill="url(#db-blue-grad)"
-          />
+          >
+            <animateMotion dur="4s" repeatCount="indefinite" rotate="auto">
+              <mpath href="#db-path-1" />
+            </animateMotion>
+          </circle>
         </g>
         <g mask="url(#db-mask-2)">
           <circle
@@ -84,7 +88,11 @@ const DatabaseWithRestApi = ({
             cy="0"
             r="12"
             fill="url(#db-blue-grad)"
-          />
+          >
+            <animateMotion dur="3.5s" repeatCount="indefinite" rotate="auto">
+              <mpath href="#db-path-2" />
+            </animateMotion>
+          </circle>
         </g>
         <g mask="url(#db-mask-3)">
           <circle
@@ -93,7 +101,11 @@ const DatabaseWithRestApi = ({
             cy="0"
             r="12"
             fill="url(#db-blue-grad)"
-          />
+          >
+            <animateMotion dur="3.8s" repeatCount="indefinite" rotate="auto">
+              <mpath href="#db-path-3" />
+            </animateMotion>
+          </circle>
         </g>
         <g mask="url(#db-mask-4)">
           <circle
@@ -102,7 +114,11 @@ const DatabaseWithRestApi = ({
             cy="0"
             r="12"
             fill="url(#db-blue-grad)"
-          />
+          >
+            <animateMotion dur="4.2s" repeatCount="indefinite" rotate="auto">
+              <mpath href="#db-path-4" />
+            </animateMotion>
+          </circle>
         </g>
         {/* Buttons */}
         <g stroke="currentColor" fill="none" strokeWidth="0.4">
@@ -125,7 +141,7 @@ const DatabaseWithRestApi = ({
               fontSize="5"
               fontWeight="500"
             >
-              {badgeTexts?.first || "GET"}
+              {badgeTexts?.first || "Sources"}
             </text>
           </g>
           {/* Second Button */}
@@ -147,7 +163,7 @@ const DatabaseWithRestApi = ({
               fontSize="5"
               fontWeight="500"
             >
-              {badgeTexts?.second || "POST"}
+              {badgeTexts?.second || "Embed"}
             </text>
           </g>
           {/* Third Button */}
@@ -169,7 +185,7 @@ const DatabaseWithRestApi = ({
               fontSize="5"
               fontWeight="500"
             >
-              {badgeTexts?.third || "PUT"}
+              {badgeTexts?.third || "Index"}
             </text>
           </g>
           {/* Fourth Button */}
@@ -191,7 +207,7 @@ const DatabaseWithRestApi = ({
               fontSize="5"
               fontWeight="500"
             >
-              {badgeTexts?.fourth || "DELETE"}
+              {badgeTexts?.fourth || "Retrieve"}
             </text>
           </g>
         </g>
@@ -243,24 +259,29 @@ const DatabaseWithRestApi = ({
         <div className="absolute -top-3 z-20 flex items-center justify-center rounded-lg border bg-[#101112] px-2 py-1 sm:-top-4 sm:py-1.5">
           <SparklesIcon className="size-3" />
           <span className="ml-2 text-[10px]">
-            {title ? title : "Data exchange using a customized REST API"}
+            {title ? title : "RAG Pipeline: Retrieve • Augment • Generate"}
           </span>
         </div>
         {/* box outter circle */}
         <div className="absolute -bottom-8 z-30 grid h-[60px] w-[60px] place-items-center rounded-full border-t bg-[#141516] font-semibold text-xs">
-          {circleText ? circleText : "SVG"}
+          {circleText ? circleText : "RAG"}
         </div>
         {/* box content */}
         <div className="relative z-10 flex h-[150px] w-full items-center justify-center overflow-hidden rounded-lg border bg-background shadow-md">
           {/* Badges */}
-          <div className="absolute bottom-8 left-12 z-10 h-7 rounded-full bg-[#101112] px-3 text-xs border flex items-center gap-2 ">
+          <div className="absolute bottom-8 left-8 z-10 h-7 rounded-full bg-[#101112] px-3 text-xs border flex items-center gap-2 ">
             <HeartHandshakeIcon className="size-4" />
-            <span>{buttonTexts?.first || "LegionDev"}</span>
+            <span>{buttonTexts?.first || "LLM"}</span>
           </div>
-          <div className="absolute right-16 z-10 hidden h-7 rounded-full bg-[#101112] px-3 text-xs sm:flex border items-center gap-2">
+          <div className="absolute bottom-8 right-8 z-10 hidden h-7 rounded-full bg-[#101112] px-3 text-xs sm:flex border items-center gap-2">
             <Folder className="size-4" />
-            <span>{buttonTexts?.second || "v2_updates"}</span>
+            <span>{buttonTexts?.second || "Store"}</span>
           </div>
+
+          {/* Stage chips inside box */}
+          <div className="absolute left-6 top-6 rounded-md border px-2 py-1 text-[10px] bg-[#101112]/70">Vector DB</div>
+          <div className="absolute left-1/2 -translate-x-1/2 top-6 rounded-md border px-2 py-1 text-[10px] bg-[#101112]/70">Retriever</div>
+          <div className="absolute right-6 top-6 rounded-md border px-2 py-1 text-[10px] bg-[#101112]/70">LLM + Form Fill</div>
           {/* Circles */}
           <motion.div
             className="absolute -bottom-14 h-[100px] w-[100px] rounded-full border-t bg-accent/5"

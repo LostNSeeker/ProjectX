@@ -15,7 +15,38 @@ interface MapProps {
 }
 
 export function WorldMap({
-  dots = [],
+  dots = [
+    {
+      start: {
+        lat: 64.2008,
+        lng: -149.4937,
+      }, // Alaska (Fairbanks)
+      end: {
+        lat: 34.0522,
+        lng: -118.2437,
+      }, // Los Angeles
+    },
+    {
+      start: { lat: 64.2008, lng: -149.4937 }, // Alaska (Fairbanks)
+      end: { lat: -15.7975, lng: -47.8919 }, // Brazil (Brasília)
+    },
+    {
+      start: { lat: -15.7975, lng: -47.8919 }, // Brazil (Brasília)
+      end: { lat: 38.7223, lng: -9.1393 }, // Lisbon
+    },
+    {
+      start: { lat: 51.5074, lng: -0.1278 }, // London
+      end: { lat: 28.6139, lng: 77.209 }, // New Delhi
+    },
+    {
+      start: { lat: 28.6139, lng: 77.209 }, // New Delhi
+      end: { lat: 43.1332, lng: 131.9113 }, // Vladivostok
+    },
+    {
+      start: { lat: 28.6139, lng: 77.209 }, // New Delhi
+      end: { lat: -1.2921, lng: 36.8219 }, // Nairobi
+    },
+  ],
   lineColor = "#0ea5e9",
 }: MapProps) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -59,6 +90,7 @@ export function WorldMap({
         ref={svgRef}
         viewBox="0 0 800 400"
         className="w-full h-full absolute inset-0 pointer-events-none select-none"
+        style={{ zIndex: 10 }}
       >
         {dots.map((dot, i) => {
           const startPoint = projectPoint(dot.start.lat, dot.start.lng);
@@ -69,17 +101,19 @@ export function WorldMap({
                 d={createCurvedPath(startPoint, endPoint)}
                 fill="none"
                 stroke="url(#path-gradient)"
-                strokeWidth="1"
+                strokeWidth="2"
                 initial={{
                   pathLength: 0,
+                  opacity: 0,
                 }}
                 animate={{
                   pathLength: 1,
+                  opacity: 1,
                 }}
                 transition={{
-                  duration: 1,
-                  delay: 0.5 * i,
-                  ease: "easeOut",
+                  duration: 1.5,
+                  delay: 0.3 * i,
+                  ease: "easeInOut",
                 }}
                 key={`start-upper-${i}`}
               ></motion.path>
@@ -89,78 +123,70 @@ export function WorldMap({
 
         <defs>
           <linearGradient id="path-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="white" stopOpacity="0" />
-            <stop offset="5%" stopColor={lineColor} stopOpacity="1" />
-            <stop offset="95%" stopColor={lineColor} stopOpacity="1" />
-            <stop offset="100%" stopColor="white" stopOpacity="0" />
+            <stop offset="0%" stopColor={lineColor} stopOpacity="0.8" />
+            <stop offset="20%" stopColor={lineColor} stopOpacity="1" />
+            <stop offset="80%" stopColor={lineColor} stopOpacity="1" />
+            <stop offset="100%" stopColor={lineColor} stopOpacity="0.8" />
           </linearGradient>
         </defs>
 
         {dots.map((dot, i) => (
           <g key={`points-group-${i}`}>
             <g key={`start-${i}`}>
-              <circle
+              <motion.circle
                 cx={projectPoint(dot.start.lat, dot.start.lng).x}
                 cy={projectPoint(dot.start.lat, dot.start.lng).y}
-                r="2"
+                r="4"
                 fill={lineColor}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.5 * i }}
               />
-              <circle
+              <motion.circle
                 cx={projectPoint(dot.start.lat, dot.start.lng).x}
                 cy={projectPoint(dot.start.lat, dot.start.lng).y}
-                r="2"
+                r="4"
                 fill={lineColor}
-                opacity="0.5"
-              >
-                <animate
-                  attributeName="r"
-                  from="2"
-                  to="8"
-                  dur="1.5s"
-                  begin="0s"
-                  repeatCount="indefinite"
-                />
-                <animate
-                  attributeName="opacity"
-                  from="0.5"
-                  to="0"
-                  dur="1.5s"
-                  begin="0s"
-                  repeatCount="indefinite"
-                />
-              </circle>
+                opacity="0.3"
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ 
+                  scale: [1, 2, 1], 
+                  opacity: [0.3, 0, 0.3] 
+                }}
+                transition={{ 
+                  duration: 2, 
+                  repeat: Infinity, 
+                  delay: 0.5 * i 
+                }}
+              />
             </g>
             <g key={`end-${i}`}>
-              <circle
+              <motion.circle
                 cx={projectPoint(dot.end.lat, dot.end.lng).x}
                 cy={projectPoint(dot.end.lat, dot.end.lng).y}
-                r="2"
+                r="4"
                 fill={lineColor}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.5 * i + 0.2 }}
               />
-              <circle
+              <motion.circle
                 cx={projectPoint(dot.end.lat, dot.end.lng).x}
                 cy={projectPoint(dot.end.lat, dot.end.lng).y}
-                r="2"
+                r="4"
                 fill={lineColor}
-                opacity="0.5"
-              >
-                <animate
-                  attributeName="r"
-                  from="2"
-                  to="8"
-                  dur="1.5s"
-                  begin="0s"
-                  repeatCount="indefinite"
-                />
-                <animate
-                  attributeName="opacity"
-                  from="0.5"
-                  to="0"
-                  dur="1.5s"
-                  begin="0s"
-                  repeatCount="indefinite"
-                />
-              </circle>
+                opacity="0.3"
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ 
+                  scale: [1, 2, 1], 
+                  opacity: [0.3, 0, 0.3] 
+                }}
+                transition={{ 
+                  duration: 2, 
+                  repeat: Infinity, 
+                  delay: 0.5 * i + 0.2 
+                }}
+              />
             </g>
           </g>
         ))}

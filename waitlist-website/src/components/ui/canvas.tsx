@@ -1,3 +1,6 @@
+/* eslint-disable */
+// @ts-nocheck
+
 function n(e) {
   // @ts-ignore
   this.init(e || {});
@@ -230,3 +233,10 @@ export const renderCanvas = function () {
   });
   resizeCanvas();
 };
+
+// Expose initializer on window for server-rendered layout to call after hydration
+// @ts-ignore
+if (typeof window !== "undefined") {
+  // @ts-ignore
+  window.renderInteractiveCanvas = renderCanvas;
+}

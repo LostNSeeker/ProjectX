@@ -131,7 +131,7 @@ const generateSquares = () => {
   ));
 };
 
-const ShuffleGrid = () => {
+export const ShuffleGrid = () => {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [squares, setSquares] = useState(generateSquares());
 

@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { FaCampground, FaFire, FaTint, FaHotTub, FaHiking } from 'react-icons/fa';
 
 const InteractiveSelector = () => {
+  const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
-  const [animatedOptions, setAnimatedOptions] = useState([]);
+  const [animatedOptions, setAnimatedOptions] = useState<number[]>([]);
   
-  const options = [
+  const options = useMemo(() => [
     {
       title: "Luxury Tent",
       description: "Cozy glamping under the stars",
@@ -36,28 +38,31 @@ const InteractiveSelector = () => {
       image: "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=800&q=80",
       icon: <FaHiking size={24} className="text-white" />
     }
-  ];
+  ], []);
 
-  const handleOptionClick = (index) => {
-    if (index !== activeIndex) {
-      setActiveIndex(index);
-    }
+  const handleOptionClick = (index: number) => {
+    const option = options[index];
+    setActiveIndex(index);
+    const url = new URL('/project', window.location.origin);
+    url.searchParams.set('image', option.image);
+    url.searchParams.set('bg', option.image);
+    url.searchParams.set('title', option.title);
+    url.searchParams.set('subtitle', option.description);
+    router.push(url.toString());
   };
 
   useEffect(() => {
-    const timers = [];
-    
+    const timers: ReturnType<typeof setTimeout>[] = [];
     options.forEach((_, i) => {
       const timer = setTimeout(() => {
-        setAnimatedOptions(prev => [...prev, i]);
+        setAnimatedOptions((prev: number[]) => [...prev, i]);
       }, 180 * i);
       timers.push(timer);
     });
-    
     return () => {
-      timers.forEach(timer => clearTimeout(timer));
+      timers.forEach((timer) => clearTimeout(timer));
     };
-  }, []);
+  }, [options]);
 
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen bg-[#222] font-sans text-white"> 
