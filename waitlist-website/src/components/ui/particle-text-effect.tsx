@@ -113,8 +113,8 @@ class Particle {
   }
 
   private generateRandomPos(x: number, y: number, mag: number): Vector2D {
-    const randomX = Math.random() * 1000
-    const randomY = Math.random() * 500
+    const randomX = Math.random() * 1920
+    const randomY = Math.random() * 1080
 
     const direction = {
       x: randomX - x,
@@ -152,8 +152,8 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
   const drawAsPoints = true
 
   const generateRandomPos = (x: number, y: number, mag: number): Vector2D => {
-    const randomX = Math.random() * 1000
-    const randomY = Math.random() * 500
+    const randomX = Math.random() * 1920
+    const randomY = Math.random() * 1080
 
     const direction = {
       x: randomX - x,
@@ -183,7 +183,7 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
 
     // Draw text
     offscreenCtx.fillStyle = "white"
-    offscreenCtx.font = "bold 100px Arial"
+    offscreenCtx.font = "bold 200px Arial"
     offscreenCtx.textAlign = "center"
     offscreenCtx.textBaseline = "middle"
     offscreenCtx.fillText(word, canvas.width / 2, canvas.height / 2)
@@ -318,8 +318,8 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
     const canvas = canvasRef.current
     if (!canvas) return
 
-    canvas.width = 1000
-    canvas.height = 500
+    canvas.width = 1920
+    canvas.height = 1080
 
     // Initialize with first word
     nextWord(words[0], canvas)
@@ -368,18 +368,11 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
   }, [])
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-black p-4">
+    <div className="w-full h-full flex items-center justify-center bg-black overflow-hidden">
       <canvas
         ref={canvasRef}
-        className="border border-gray-800 rounded-lg shadow-2xl"
-        style={{ maxWidth: "100%", height: "auto" }}
+        className="w-full h-full object-cover"
       />
-      <div className="mt-4 text-white text-sm text-center max-w-md">
-        <p className="mb-2">Particle Text Effect</p>
-        <p className="text-gray-400 text-xs">
-          Right-click and hold while moving mouse to destroy particles • Words change automatically every 4 seconds
-        </p>
-      </div>
     </div>
   )
 }
