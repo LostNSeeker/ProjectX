@@ -2,17 +2,14 @@
 
 import { Dock, DockIcon, DockItem, DockLabel } from "@/components/ui/dock";
 import "@/components/ui/canvas";
-import { BackgroundBeams } from "@/components/ui/background-beams";
 import { Calendar } from "@/components/ui/calendar";
 import { ParticleTextEffect } from "@/components/ui/particle-text-effect";
 import { AnimatedTestimonials } from "@/components/ui/animated-testimonials";
 import DatabaseWithRestApi from "@/components/ui/database-with-rest-api";
 import { ShuffleHero } from "@/components/ui/shuffle-grid";
 import { ContainerScroll } from "@/components/ui/container-scroll-animation";
-import { WorldMap } from "@/components/ui/world-map";
 import InteractiveSelector from "@/components/ui/interactive-selector";
 import { Button } from "@/components/ui/button";
-import { CanvasBackground } from "@/components/ui/canvas-background";
 import { SplineSceneBasic } from "@/components/ui/demo";
 import WaveDemo from "@/components/ui/wave-demo";
 import { Home, Zap, Users, MessageCircle, Mail, ArrowRight, Check } from "lucide-react";
@@ -139,7 +136,6 @@ export default function HomePage() {
         {!showIntro && (
           <section id="home" className="h-screen w-full relative overflow-hidden">
             <div className="absolute inset-0 bg-black" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.05),transparent_70%)]" />
             
             <motion.div
               initial={{ opacity: 0, y: 50 }}
@@ -152,12 +148,10 @@ export default function HomePage() {
           </section>
         )}
 
-        {/* How It Works - Center with Bigger Size */}
+        {/* How It Works & See It in Action - Combined */}
         {!showIntro && (
-          <section className="py-40 relative overflow-hidden bg-black">
+          <section className="py-16 relative overflow-hidden">
             <div className="absolute inset-0 bg-black" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.05),transparent_50%)]" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(139,92,246,0.05),transparent_50%)]" />
             
             <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
               <motion.div
@@ -165,74 +159,114 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
                 viewport={{ once: true }}
-                className="text-center mb-24"
+                className="text-center mb-16"
               >
-                <h2 className="text-6xl lg:text-8xl font-bold mb-10">
-                  <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                    How It Works
-                  </span>
+                <h2 className="text-6xl lg:text-8xl font-bold mb-10 text-white">
+                  How It Works
                 </h2>
                 <p className="text-2xl lg:text-3xl text-gray-400 max-w-5xl mx-auto leading-relaxed">
                   Our advanced AI system scrapes and analyzes thousands of job listings to bring you the perfect remote opportunities.
                 </p>
               </motion.div>
 
-              <div className="flex justify-center items-center">
-                <div className="w-full max-w-[1400px] transform scale-125">
-                  <DatabaseWithRestApi />
+              <div id="how-it-works" className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
+                {/* Database Component Section */}
+                <div className="flex flex-col justify-center items-center">
+                  <div className="w-full">
+                    <DatabaseWithRestApi />
+                    
+                    {/* Explanation Text Below Database */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 0.2 }}
+                      viewport={{ once: true }}
+                      className="mt-8 text-left"
+                    >
+                      <h3 className="text-2xl font-bold text-white mb-3">
+                        Intelligent Job Scraping & Analysis
+                      </h3>
+                      <p className="text-base text-gray-400 leading-relaxed">
+                        Our system continuously scrapes job listings from thousands of sources across the internet. 
+                        The data flows through our AI-powered analysis engine which filters, categorizes, and matches 
+                        positions based on your preferences, skills, and career goals.
+                      </p>
+                    </motion.div>
+                  </div>
+                </div>
+
+                {/* AI-Powered Matching Section */}
+                <div className="flex flex-col">
+                  <ContainerScroll 
+                    titleComponent={
+                      <h2 className="text-3xl font-bold text-center mb-6 text-white">
+                        AI-Powered Matching
+                      </h2>
+                    }
+                  >
+                    <div className="bg-black rounded-2xl p-6 border border-white/10">
+                      <div className="flex flex-col gap-6">
+                        <div>
+                          <h3 className="text-xl font-bold mb-3 text-white">Real-Time Job Matching</h3>
+                          <p className="text-gray-300 mb-4 text-sm">
+                            Our advanced algorithm analyzes your profile to match you with perfect remote opportunities.
+                          </p>
+                          <ul className="space-y-2 text-gray-400 text-sm">
+                            <li className="flex items-center gap-2">
+                              <Check className="w-4 h-4 text-white" />
+                              Personalized job recommendations
+                            </li>
+                            <li className="flex items-center gap-2">
+                              <Check className="w-4 h-4 text-white" />
+                              Company culture matching
+                            </li>
+                            <li className="flex items-center gap-2">
+                              <Check className="w-4 h-4 text-white" />
+                              Salary range optimization
+                            </li>
+                          </ul>
+                        </div>
+                        <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                          <div className="space-y-3">
+                            <div className="bg-white/5 rounded-lg p-3">
+                              <div className="text-xs text-gray-400">Job Match Score</div>
+                              <div className="text-xl font-bold text-white">94%</div>
+                            </div>
+                            <div className="bg-white/5 rounded-lg p-3">
+                              <div className="text-xs text-gray-400">Remote Score</div>
+                              <div className="text-xl font-bold text-white">100%</div>
+                            </div>
+                            <div className="bg-white/5 rounded-lg p-3">
+                              <div className="text-xs text-gray-400">Culture Fit</div>
+                              <div className="text-xl font-bold text-white">89%</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </ContainerScroll>
                 </div>
               </div>
             </div>
           </section>
         )}
 
-        {/* World Map - We Scrape from All Internet */}
+        {/* Companies We Track */}
         {!showIntro && (
-          <section className="py-32 relative overflow-hidden">
+          <section className="py-16 relative overflow-hidden">
             <div className="absolute inset-0 bg-black" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(59,130,246,0.03),transparent_60%)]" />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
                 viewport={{ once: true }}
-                className="text-center mb-16"
+                className="text-center mb-12"
               >
-                <h2 className="text-4xl lg:text-6xl font-bold mb-6">
-                  <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                    We Scrape From All Over The Internet
-                  </span>
+                <h2 className="text-4xl lg:text-6xl font-bold mb-6 text-white">
+                  Companies We Track
                 </h2>
-                <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-                  Our intelligent bots scan thousands of job boards, company websites, and platforms worldwide to bring you the best remote opportunities from every corner of the web.
-                </p>
-              </motion.div>
-
-              <WorldMap />
-            </div>
-          </section>
-        )}
-
-        {/* Companies Using Software - We Scrape These Companies */}
-        {!showIntro && (
-          <section className="py-32 relative overflow-hidden">
-            <div className="absolute inset-0 bg-black" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_50%,rgba(139,92,246,0.03),transparent_60%)]" />
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                viewport={{ once: true }}
-                className="text-center mb-16"
-              >
-                <h2 className="text-4xl lg:text-6xl font-bold mb-6">
-                  <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                    Companies We Track
-                  </span>
-                </h2>
-                <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                <p className="text-xl text-gray-400 max-w-3xl mx-auto">
                   We actively scrape job listings from top tech companies and startups, ensuring you never miss an opportunity from industry leaders.
                 </p>
               </motion.div>
@@ -242,100 +276,22 @@ export default function HomePage() {
           </section>
         )}
 
-        {/* See It in Action */}
-        {!showIntro && (
-          <section className="py-32 relative overflow-hidden">
-            <div className="absolute inset-0 bg-black" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(59,130,246,0.03),transparent_60%)]" />
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                viewport={{ once: true }}
-                className="text-center mb-16"
-              >
-                <h2 className="text-4xl lg:text-6xl font-bold mb-6">
-                  <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                    See It in Action
-                  </span>
-                </h2>
-                <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-                  Experience the power of RemoteFlow with our interactive demo.
-                </p>
-              </motion.div>
-
-              <ContainerScroll 
-              titleComponent={
-                <h2 className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                  AI-Powered Matching
-                </h2>
-              }
-            >
-              <div className="bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl p-8 border border-white/10">
-                <div className="grid md:grid-cols-2 gap-8 items-center">
-                  <div>
-                    <h3 className="text-2xl font-bold mb-4 text-white">AI-Powered Job Matching</h3>
-                    <p className="text-gray-300 mb-6">
-                      Our advanced algorithm analyzes your skills, preferences, and career goals to match you with the perfect remote opportunities.
-                    </p>
-                    <ul className="space-y-3 text-gray-300">
-                      <li className="flex items-center gap-3">
-                        <Check className="w-5 h-5 text-green-400" />
-                        Personalized job recommendations
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <Check className="w-5 h-5 text-green-400" />
-                        Company culture matching
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <Check className="w-5 h-5 text-green-400" />
-                        Salary range optimization
-                      </li>
-                    </ul>
-                  </div>
-                  <div className="bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl p-6 border border-white/10">
-                    <div className="space-y-4">
-                      <div className="bg-white/5 rounded-lg p-4">
-                        <div className="text-sm text-gray-400">Job Match Score</div>
-                        <div className="text-2xl font-bold text-green-400">94%</div>
-                      </div>
-                      <div className="bg-white/5 rounded-lg p-4">
-                        <div className="text-sm text-gray-400">Remote Score</div>
-                        <div className="text-2xl font-bold text-blue-400">100%</div>
-                      </div>
-                      <div className="bg-white/5 rounded-lg p-4">
-                        <div className="text-sm text-gray-400">Culture Fit</div>
-                        <div className="text-2xl font-bold text-purple-400">89%</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </ContainerScroll>
-            </div>
-          </section>
-        )}
-
         {/* Testimonials */}
         {!showIntro && (
-          <section id="testimonials" className="py-32 relative overflow-hidden">
+          <section id="testimonials" className="py-16 relative overflow-hidden">
             <div className="absolute inset-0 bg-black" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_40%_60%,rgba(139,92,246,0.03),transparent_60%)]" />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
                 viewport={{ once: true }}
-                className="text-center mb-16"
+                className="text-center mb-12"
               >
-                <h2 className="text-4xl lg:text-6xl font-bold mb-6">
-                  <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                    What Developers Say
-                  </span>
+                <h2 className="text-4xl lg:text-6xl font-bold mb-6 text-white">
+                  What Developers Say
                 </h2>
-                <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                <p className="text-xl text-gray-400 max-w-3xl mx-auto">
                   Don&apos;t just take our word for it. Here&apos;s what real developers are saying about RemoteFlow.
                 </p>
               </motion.div>
@@ -347,10 +303,8 @@ export default function HomePage() {
 
         {/* Calendar + Waitlist Combined */}
         {!showIntro && (
-          <section id="waitlist" className="py-32 relative overflow-hidden">
-            <BackgroundBeams className="bg-black" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.1),transparent_50%)]" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(139,92,246,0.1),transparent_50%)]" />
+          <section id="waitlist" className="py-16 relative overflow-hidden">
+            <div className="absolute inset-0 bg-black" />
 
             <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
               <motion.div
@@ -360,22 +314,20 @@ export default function HomePage() {
                 viewport={{ once: true }}
                 className="text-center mb-12"
               >
-                <h2 className="text-4xl lg:text-6xl font-bold mb-6">
-                  <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                    Join The Waitlist
-                  </span>
+                <h2 className="text-4xl lg:text-6xl font-bold mb-6 text-white">
+                  Join The Waitlist
                 </h2>
-                <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                <p className="text-xl text-gray-400 max-w-3xl mx-auto">
                   Be among the first to experience RemoteFlow. Reserve your spot today and get early access.
                 </p>
               </motion.div>
 
               <div className="grid md:grid-cols-2 gap-10 items-start">
                 <div className="w-full flex justify-center">
-                  <div className="bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl p-6 border border-white/10 shadow-2xl transform scale-95">
+                  <div className="bg-black rounded-2xl p-6 border border-white/10 shadow-2xl transform scale-95">
                     <Calendar />
                     <div className="mt-6 flex justify-center">
-                      <Button onClick={() => router.push('/processing')} className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-200">
+                      <Button onClick={() => router.push('/processing')} className="bg-white text-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-all duration-200">
                         Book a Demo
                       </Button>
                     </div>
@@ -395,13 +347,13 @@ export default function HomePage() {
                       animate={{ opacity: 1, scale: 1 }}
                       className="max-w-md mx-auto text-center"
                     >
-                      <div className="w-20 h-20 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <Check className="w-10 h-10 text-white" />
+                      <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-6">
+                        <Check className="w-10 h-10 text-black" />
                       </div>
                       <h3 className="text-2xl font-bold text-white mb-4">
                         You&apos;re in! 🎉
                       </h3>
-                      <p className="text-gray-300 mb-6">
+                      <p className="text-gray-400 mb-6">
                         Get ready to code remotely like a pro! We&apos;ll notify you when RemoteFlow launches.
                       </p>
                     </motion.div>
@@ -412,57 +364,57 @@ export default function HomePage() {
                           <label className="block text-sm font-medium text-gray-300 mb-2">
                             Full Name
                           </label>
-                          <input
-                            type="text"
-                            value={formData.name}
-                            onChange={(e) => setFormData({...formData, name: e.target.value})}
-                            className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200"
-                            placeholder="Enter your full name"
-                            required
-                          />
+                        <input
+                          type="text"
+                          value={formData.name}
+                          onChange={(e) => setFormData({...formData, name: e.target.value})}
+                          className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-200"
+                          placeholder="Enter your full name"
+                          required
+                        />
                         </div>
 
                         <div>
                           <label className="block text-sm font-medium text-gray-300 mb-2">
                             Email Address
                           </label>
-                          <input
-                            type="email"
-                            value={formData.email}
-                            onChange={(e) => setFormData({...formData, email: e.target.value})}
-                            className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200"
-                            placeholder="your.email@example.com"
-                            required
-                          />
+                        <input
+                          type="email"
+                          value={formData.email}
+                          onChange={(e) => setFormData({...formData, email: e.target.value})}
+                          className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-200"
+                          placeholder="your.email@example.com"
+                          required
+                        />
                         </div>
 
                         <div>
                           <label className="block text-sm font-medium text-gray-300 mb-2">
                             Job Role
                           </label>
-                          <select
-                            value={formData.jobRole}
-                            onChange={(e) => setFormData({...formData, jobRole: e.target.value})}
-                            className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200"
-                            required
-                          >
-                            <option value="">Select your role</option>
-                            {jobRoles.map((role) => (
-                              <option key={role} value={role} className="bg-gray-800">
-                                {role}
-                              </option>
-                            ))}
-                          </select>
+                        <select
+                          value={formData.jobRole}
+                          onChange={(e) => setFormData({...formData, jobRole: e.target.value})}
+                          className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-200"
+                          required
+                        >
+                          <option value="">Select your role</option>
+                          {jobRoles.map((role) => (
+                            <option key={role} value={role} className="bg-black">
+                              {role}
+                            </option>
+                          ))}
+                        </select>
                         </div>
 
                         <div className="flex items-center space-x-3">
-                          <input
-                            type="checkbox"
-                            id="remoteOnly"
-                            checked={formData.remoteOnly}
-                            onChange={(e) => setFormData({...formData, remoteOnly: e.target.checked})}
-                            className="w-5 h-5 text-blue-500 bg-white/5 border-white/20 rounded focus:ring-blue-500/50 focus:ring-2"
-                          />
+                        <input
+                          type="checkbox"
+                          id="remoteOnly"
+                          checked={formData.remoteOnly}
+                          onChange={(e) => setFormData({...formData, remoteOnly: e.target.checked})}
+                          className="w-5 h-5 text-white bg-white/5 border-white/20 rounded focus:ring-white/50 focus:ring-2"
+                        />
                           <label htmlFor="remoteOnly" className="text-sm text-gray-300">
                             I&apos;m only interested in remote positions
                           </label>
@@ -470,7 +422,7 @@ export default function HomePage() {
 
                         <Button
                           type="submit"
-                          className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 rounded-lg font-semibold text-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-blue-500/25"
+                          className="w-full bg-white text-black py-4 rounded-lg font-semibold text-lg hover:bg-gray-200 transition-all duration-200 shadow-lg"
                         >
                           Reserve My Spot!
                           <ArrowRight className="w-5 h-5 ml-2" />
@@ -490,23 +442,20 @@ export default function HomePage() {
 
         {/* Other Projects */}
         {!showIntro && (
-          <section className="py-32 relative overflow-hidden">
+          <section className="py-8 relative overflow-hidden">
             <div className="absolute inset-0 bg-black" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_40%,rgba(59,130,246,0.03),transparent_60%)]" />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
                 viewport={{ once: true }}
-                className="text-center mb-16"
+                className="text-center mb-8"
               >
-                <h2 className="text-4xl lg:text-6xl font-bold mb-6">
-                  <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                    Other Tools We&apos;re Building
-                  </span>
+                <h2 className="text-4xl lg:text-6xl font-bold mb-6 text-white">
+                  Other Tools We&apos;re Building
                 </h2>
-                <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                <p className="text-xl text-gray-400 max-w-3xl mx-auto">
                   Explore our upcoming projects designed for developers.
                 </p>
               </motion.div>
@@ -522,12 +471,11 @@ export default function HomePage() {
             <WaveDemo />
             
             {/* Footer Content Below Wave */}
-            <div className="py-12 relative">
-              <CanvasBackground />
+            <div className="pb-12 relative bg-black">
               <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid md:grid-cols-3 gap-8 mb-8">
                   <div>
-                    <h3 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-4">
+                    <h3 className="text-xl font-bold text-white mb-4">
                       RemoteFlow
                     </h3>
                     <p className="text-gray-400 text-sm">

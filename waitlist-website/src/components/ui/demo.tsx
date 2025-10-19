@@ -18,21 +18,21 @@ export function SplineSceneBasic() {
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-500">
             Find Your Dream Remote Job
           </h1>
-          <p className="mt-8 text-gray-300 max-w-2xl text-xl md:text-2xl">
+          <p className="mt-8 text-gray-400 max-w-2xl text-xl md:text-2xl">
             RemoteFlow intelligently scrapes and curates remote IT jobs from across the web. 
             Our AI-powered platform matches you with opportunities that align perfectly with your skills and preferences.
           </p>
           <div className="mt-12 space-y-4 text-gray-400 text-lg">
             <div className="flex items-center gap-4">
-              <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+              <div className="w-3 h-3 rounded-full bg-white"></div>
               <span>Smart AI Job Matching</span>
             </div>
             <div className="flex items-center gap-4">
-              <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+              <div className="w-3 h-3 rounded-full bg-white"></div>
               <span>Global Remote Opportunities</span>
             </div>
             <div className="flex items-center gap-4">
-              <div className="w-3 h-3 rounded-full bg-pink-500"></div>
+              <div className="w-3 h-3 rounded-full bg-white"></div>
               <span>Verified Companies Only</span>
             </div>
           </div>
