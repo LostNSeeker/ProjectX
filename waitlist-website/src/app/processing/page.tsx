@@ -9,14 +9,14 @@ export default function ProcessingPage() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      router.push("/thank-you");
+      router.push("/thank-you?returnTo=/?skipIntro=true");
     }, 5000);
     return () => clearTimeout(timer);
   }, [router]);
 
   return (
-    <main className="min-h-screen bg-black text-white flex items-center">
-      <div className="w-full">
+    <main className="min-h-screen bg-black text-white flex items-center justify-center">
+      <div className="w-full h-full">
         <ShaderAnimation />
       </div>
     </main>

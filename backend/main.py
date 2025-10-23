@@ -10,17 +10,123 @@ from datetime import datetime
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
-# Configuration
+# Configuration - Updated with companies from companies.md
 WEBSITES = [
+    # Job portals
     {"url": "https://www.linkedin.com/jobs/search/?keywords=full%20stack%20engineer&location=Remote", "selector": "li.jobs-search-results__list-item"},
     {"url": "https://remote.co/remote-jobs/developer/", "selector": "div.job-listing"},
     {"url": "https://weworkremotely.com/categories/remote-full-stack-programming-jobs", "selector": "li.feature"},
-    # Sample IT company career pages
+    
+    # Major tech companies
     {"url": "https://careers.google.com/jobs/results/?distance=50&employment_type=FULL_TIME&q=full%20stack%20engineer", "selector": "div.job-listing"},
     {"url": "https://www.amazon.jobs/en/search?base_query=full+stack+engineer", "selector": "div.job"},
-    # Add more websites (up to 50), e.g.,
-    # {"url": "https://company.com/careers", "selector": "div.job-card"},
-]  # Replace with your 50 IT-focused websites
+    {"url": "https://openai.com/careers/", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.glean.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.harvey.ai/company#company-careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.statsig.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://front.com/jobs", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.chainguard.dev/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.citadelsecurities.com/careers/", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://traderepublic.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://remote.com/en-in/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.rippling.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.klarna.com/careers/", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://international.nubank.com.br/jobs/", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.anrok.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.clipboardhealth.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.faire.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.machindustries.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.boringcompany.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.meter.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://ampsortation.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://watershed.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://joroexperiences.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://starkware.co/careers/", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.airtime.com/jobs", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://info.wonolo.com/careers/", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://recroom.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.uipath.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.knowde.com/resources/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://careersatdoordash.com/career-areas/", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://careers.airbnb.com/", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.figma.com/careers/", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://careers.robinhood.com/", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://careers.snowflake.com/us/en", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.databricks.com/company/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://instacart.careers/current-openings/", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://stripe.com/jobs/search", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.ftxinfotech.com/careers/", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.close.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://linear.app/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://vercel.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.notion.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.gong.io/careers/", "selector": "div.job-listing, .job-card, .career-item"},
+    
+    # AI/ML Companies
+    {"url": "https://www.perplexity.ai/hub/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.moveworks.com/us/en/company/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://replicate.com/about", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.anterior.com/company", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.pinecone.io/careers/", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://weaviate.io/company/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://jobs.ashbyhq.com/anyscale", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://jobs.ashbyhq.com/baseten", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.together.ai/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.anthropic.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.cohere.ai/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.huggingface.co/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.mistral.ai/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.character.ai/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.jasper.ai/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.copy.ai/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.runwayml.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.midjourney.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.stability.ai/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.leap.ai/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.leonardo.ai/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.ideogram.ai/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.unsplash.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.shutterstock.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.gettyimages.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.adobe.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.canva.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.figma.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.sketch.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.invisionapp.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.principle.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.framer.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.webflow.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.squarespace.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.wix.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.shopify.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.bigcommerce.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.magento.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.woocommerce.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.prestashop.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.opencart.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.zen-cart.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.oscommerce.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.cubecart.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.xt-commerce.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.oxid-esales.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.shopware.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.sylius.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.akeneo.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.pimcore.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.magento.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.woocommerce.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.prestashop.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.opencart.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.zen-cart.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.oscommerce.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.cubecart.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.xt-commerce.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.oxid-esales.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.shopware.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.sylius.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.akeneo.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+    {"url": "https://www.pimcore.com/careers", "selector": "div.job-listing, .job-card, .career-item"},
+]
 OUTPUT_JSON = "filtered_job_postings.json"  # Output JSON file
 HASH_FILE = "website_hashes.json"  # File to store hashes
 EMAIL_ADDRESS = "your_email@example.com"  # Your email for notifications
@@ -150,7 +256,13 @@ def check_websites():
 
 # Flask app setup
 app = Flask(__name__)
-CORS(app)  # Enable CORS for frontend
+
+# Enable CORS for frontend - allow any origin for testing
+CORS(app, 
+     origins=['*'],  # Allow any origin for testing
+     methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+     allow_headers=['Content-Type', 'Authorization'],
+     supports_credentials=False)  # Set to False when allowing any origin
 
 @app.route('/api/jobs', methods=['GET'])
 def get_jobs():

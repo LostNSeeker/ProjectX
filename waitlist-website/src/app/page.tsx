@@ -1,6 +1,5 @@
 "use client";
 
-import { Dock, DockIcon, DockItem, DockLabel } from "@/components/ui/dock";
 import "@/components/ui/canvas";
 import { Calendar } from "@/components/ui/calendar";
 import { ParticleTextEffect } from "@/components/ui/particle-text-effect";
@@ -12,7 +11,9 @@ import InteractiveSelector from "@/components/ui/interactive-selector";
 import { Button } from "@/components/ui/button";
 import { SplineSceneBasic } from "@/components/ui/demo";
 import WaveDemo from "@/components/ui/wave-demo";
-import { Home, Zap, Users, MessageCircle, Mail, ArrowRight, Check } from "lucide-react";
+import { SmoothReveal } from "@/components/ui/smooth-reveal-fixed";
+import { MobileOrientationCheck } from "@/components/ui/mobile-orientation-check";
+import { ArrowRight, Check } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -29,11 +30,18 @@ export default function HomePage() {
   });
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    // Check if we're coming back from another page
+    const urlParams = new URLSearchParams(window.location.search);
+    const skipIntro = urlParams.get('skipIntro');
+    
+    if (skipIntro === 'true') {
       setShowIntro(false);
-    }, 5000);
-
-    return () => clearTimeout(timer);
+    } else {
+      const timer = setTimeout(() => {
+        setShowIntro(false);
+      }, 8000);
+      return () => clearTimeout(timer);
+    }
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -76,7 +84,7 @@ export default function HomePage() {
 
 
   return (
-    <>
+    <MobileOrientationCheck>
       {/* Intro Screen with ParticleTextEffect */}
       <AnimatePresence>
         {showIntro && (
@@ -87,102 +95,56 @@ export default function HomePage() {
             className="fixed inset-0 z-[100] flex items-center justify-center bg-black"
           >
             <div className="w-full h-full">
-              <ParticleTextEffect words={["Welcome to", "RemoteFlow", "Elite Job Platform"]} />
+              <ParticleTextEffect words={["Welcome to", "THE Elite section"," of Internet"]} />
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
       <main className="min-h-screen bg-black text-white">
-        {/* Dock Navigation */}
-        {!showIntro && (
-          <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
-            <Dock className="bg-black/80 backdrop-blur-md border border-white/10">
-              <DockItem>
-                <DockIcon>
-                  <Home className="w-6 h-6 text-white" />
-                </DockIcon>
-                <DockLabel>Home</DockLabel>
-              </DockItem>
-              <DockItem>
-                <DockIcon>
-                  <Zap className="w-6 h-6 text-white" />
-                </DockIcon>
-                <DockLabel>Features</DockLabel>
-              </DockItem>
-              <DockItem>
-                <DockIcon>
-                  <Users className="w-6 h-6 text-white" />
-                </DockIcon>
-                <DockLabel>Waitlist</DockLabel>
-              </DockItem>
-              <DockItem>
-                <DockIcon>
-                  <MessageCircle className="w-6 h-6 text-white" />
-                </DockIcon>
-                <DockLabel>Testimonials</DockLabel>
-              </DockItem>
-              <DockItem>
-                <DockIcon>
-                  <Mail className="w-6 h-6 text-white" />
-                </DockIcon>
-                <DockLabel>Contact</DockLabel>
-              </DockItem>
-            </Dock>
-          </div>
-        )}
 
         {/* Hero Section with 3D Robot - Full Screen */}
         {!showIntro && (
           <section id="home" className="h-screen w-full relative overflow-hidden">
             <div className="absolute inset-0 bg-black" />
             
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="w-full h-full"
-            >
-              <SplineSceneBasic />
-            </motion.div>
+            <SmoothReveal delay={0.2} duration={1.2} direction="up" className="w-full h-full">
+              <div className="w-full h-full relative">
+                <div className="absolute inset-0 -mx-8">
+                  <SplineSceneBasic />
+                </div>
+              </div>
+            </SmoothReveal>
           </section>
         )}
 
         {/* How It Works & See It in Action - Combined */}
         {!showIntro && (
-          <section className="py-16 relative overflow-hidden">
+          <section className="py-4 relative overflow-hidden">
             <div className="absolute inset-0 bg-black" />
             
             <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                viewport={{ once: true }}
-                className="text-center mb-16"
-              >
-                <h2 className="text-6xl lg:text-8xl font-bold mb-10 text-white">
-                  How It Works
+              <SmoothReveal delay={0.1} duration={0.8} direction="up" className="text-center mb-4">
+                <h2 className="text-6xl lg:text-8xl font-bold mb-4">
+                  <span className="bg-gradient-to-r from-gray-300 via-white to-gray-400 bg-clip-text text-transparent">
+                    How It Works
+                  </span>
                 </h2>
                 <p className="text-2xl lg:text-3xl text-gray-400 max-w-5xl mx-auto leading-relaxed">
                   Our advanced AI system scrapes and analyzes thousands of job listings to bring you the perfect remote opportunities.
                 </p>
-              </motion.div>
+              </SmoothReveal>
 
-              <div id="how-it-works" className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-1">
                 {/* Database Component Section */}
                 <div className="flex flex-col justify-center items-center">
                   <div className="w-full">
-                    <DatabaseWithRestApi />
+                    <SmoothReveal delay={0.2} duration={0.8} direction="up">
+                      <DatabaseWithRestApi />
+                    </SmoothReveal>
                     
                     {/* Explanation Text Below Database */}
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.2 }}
-                      viewport={{ once: true }}
-                      className="mt-8 text-left"
-                    >
+                    <SmoothReveal delay={0.4} duration={0.6} direction="up" className="mt-8 text-left">
                       <h3 className="text-2xl font-bold text-white mb-3">
                         Intelligent Job Scraping & Analysis
                       </h3>
@@ -191,19 +153,16 @@ export default function HomePage() {
                         The data flows through our AI-powered analysis engine which filters, categorizes, and matches 
                         positions based on your preferences, skills, and career goals.
                       </p>
-                    </motion.div>
+                    </SmoothReveal>
                   </div>
                 </div>
 
                 {/* AI-Powered Matching Section */}
                 <div className="flex flex-col">
-                  <ContainerScroll 
-                    titleComponent={
-                      <h2 className="text-3xl font-bold text-center mb-6 text-white">
-                        AI-Powered Matching
-                      </h2>
-                    }
-                  >
+                  <SmoothReveal delay={0.6} duration={0.8} direction="left">
+                    <ContainerScroll 
+                      titleComponent=""
+                    >
                     <div className="bg-black rounded-2xl p-6 border border-white/10">
                       <div className="flex flex-col gap-6">
                         <div>
@@ -244,7 +203,8 @@ export default function HomePage() {
                         </div>
                       </div>
                     </div>
-                  </ContainerScroll>
+                    </ContainerScroll>
+                  </SmoothReveal>
                 </div>
               </div>
             </div>
@@ -253,94 +213,83 @@ export default function HomePage() {
 
         {/* Companies We Track */}
         {!showIntro && (
-          <section className="py-16 relative overflow-hidden">
+          <section className="py-4 relative overflow-hidden">
             <div className="absolute inset-0 bg-black" />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                viewport={{ once: true }}
-                className="text-center mb-12"
-              >
-                <h2 className="text-4xl lg:text-6xl font-bold mb-6 text-white">
-                  Companies We Track
+              <SmoothReveal delay={0.1} duration={0.8} direction="up" className="text-center mb-12">
+                <h2 className="text-4xl lg:text-6xl font-bold mb-6">
+                  <span className="bg-gradient-to-r from-gray-300 via-white to-gray-400 bg-clip-text text-transparent">
+                    Companies We Track
+                  </span>
                 </h2>
                 <p className="text-xl text-gray-400 max-w-3xl mx-auto">
                   We actively scrape job listings from top tech companies and startups, ensuring you never miss an opportunity from industry leaders.
                 </p>
-              </motion.div>
+              </SmoothReveal>
               
-              <ShuffleHero />
+              <SmoothReveal delay={0.3} duration={0.8} direction="up">
+                <ShuffleHero />
+              </SmoothReveal>
             </div>
           </section>
         )}
 
         {/* Testimonials */}
         {!showIntro && (
-          <section id="testimonials" className="py-16 relative overflow-hidden">
+          <section id="testimonials" className="py-8 relative overflow-hidden">
             <div className="absolute inset-0 bg-black" />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                viewport={{ once: true }}
-                className="text-center mb-12"
-              >
-                <h2 className="text-4xl lg:text-6xl font-bold mb-6 text-white">
-                  What Developers Say
+              <SmoothReveal delay={0.1} duration={0.8} direction="up" className="text-center mb-12">
+                <h2 className="text-4xl lg:text-6xl font-bold mb-6">
+                  <span className="bg-gradient-to-r from-gray-300 via-white to-gray-400 bg-clip-text text-transparent">
+                    What Developers Say
+                  </span>
                 </h2>
                 <p className="text-xl text-gray-400 max-w-3xl mx-auto">
                   Don&apos;t just take our word for it. Here&apos;s what real developers are saying about RemoteFlow.
                 </p>
-              </motion.div>
+              </SmoothReveal>
 
-              <AnimatedTestimonials testimonials={testimonials} />
+              <SmoothReveal delay={0.3} duration={0.8} direction="up">
+                <AnimatedTestimonials testimonials={testimonials} />
+              </SmoothReveal>
             </div>
           </section>
         )}
 
         {/* Calendar + Waitlist Combined */}
         {!showIntro && (
-          <section id="waitlist" className="py-16 relative overflow-hidden">
+          <section id="waitlist" className="py-8 relative overflow-hidden">
             <div className="absolute inset-0 bg-black" />
 
             <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                viewport={{ once: true }}
-                className="text-center mb-12"
-              >
-                <h2 className="text-4xl lg:text-6xl font-bold mb-6 text-white">
-                  Join The Waitlist
+              <SmoothReveal delay={0.1} duration={0.8} direction="up" className="text-center mb-12">
+                <h2 className="text-4xl lg:text-6xl font-bold mb-6">
+                  <span className="bg-gradient-to-r from-gray-300 via-white to-gray-400 bg-clip-text text-transparent">
+                    Join The Waitlist
+                  </span>
                 </h2>
                 <p className="text-xl text-gray-400 max-w-3xl mx-auto">
                   Be among the first to experience RemoteFlow. Reserve your spot today and get early access.
                 </p>
-              </motion.div>
+              </SmoothReveal>
 
-              <div className="grid md:grid-cols-2 gap-10 items-start">
-                <div className="w-full flex justify-center">
-                  <div className="bg-black rounded-2xl p-6 border border-white/10 shadow-2xl transform scale-95">
-                    <Calendar />
-                    <div className="mt-6 flex justify-center">
-                      <Button onClick={() => router.push('/processing')} className="bg-white text-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-all duration-200">
-                        Book a Demo
-                      </Button>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-start">
+                <div className="w-full flex justify-center mb-8 lg:mb-0">
+                  <SmoothReveal delay={0.2} duration={0.6} direction="left">
+                    <div className="bg-black rounded-2xl p-4 sm:p-6 border border-white/10 shadow-2xl w-full max-w-sm">
+                      <Calendar />
+                      <div className="mt-6 flex justify-center">
+                        <Button onClick={() => router.push('/processing')} className="bg-white text-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-all duration-200 w-full sm:w-auto">
+                          Book a Demo
+                        </Button>
+                      </div>
                     </div>
-                  </div>
+                  </SmoothReveal>
                 </div>
 
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.1 }}
-                  viewport={{ once: true }}
-                  className="w-full"
-                >
+                <div className="w-full">
+                  <SmoothReveal delay={0.4} duration={0.6} direction="right">
                   {isSubmitted ? (
                     <motion.div
                       initial={{ opacity: 0, scale: 0.95 }}
@@ -358,7 +307,7 @@ export default function HomePage() {
                       </p>
                     </motion.div>
                   ) : (
-                    <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-8 border border-white/10 shadow-2xl max-w-md mx-auto">
+                    <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-4 sm:p-8 border border-white/10 shadow-2xl w-full max-w-md mx-auto">
                       <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
                           <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -368,7 +317,7 @@ export default function HomePage() {
                           type="text"
                           value={formData.name}
                           onChange={(e) => setFormData({...formData, name: e.target.value})}
-                          className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-200"
+                          className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-200 text-base"
                           placeholder="Enter your full name"
                           required
                         />
@@ -382,7 +331,7 @@ export default function HomePage() {
                           type="email"
                           value={formData.email}
                           onChange={(e) => setFormData({...formData, email: e.target.value})}
-                          className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-200"
+                          className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-200 text-base"
                           placeholder="your.email@example.com"
                           required
                         />
@@ -395,7 +344,7 @@ export default function HomePage() {
                         <select
                           value={formData.jobRole}
                           onChange={(e) => setFormData({...formData, jobRole: e.target.value})}
-                          className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-200"
+                          className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-200 text-base"
                           required
                         >
                           <option value="">Select your role</option>
@@ -434,7 +383,8 @@ export default function HomePage() {
                       </p>
                     </div>
                   )}
-                </motion.div>
+                  </SmoothReveal>
+                </div>
               </div>
             </div>
           </section>
@@ -442,25 +392,23 @@ export default function HomePage() {
 
         {/* Other Projects */}
         {!showIntro && (
-          <section className="py-8 relative overflow-hidden">
+          <section className="py-4 relative overflow-hidden">
             <div className="absolute inset-0 bg-black" />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                viewport={{ once: true }}
-                className="text-center mb-8"
-              >
-                <h2 className="text-4xl lg:text-6xl font-bold mb-6 text-white">
-                  Other Tools We&apos;re Building
+              <SmoothReveal delay={0.1} duration={0.8} direction="up" className="text-center mb-8">
+                <h2 className="text-4xl lg:text-6xl font-bold mb-6">
+                  <span className="bg-gradient-to-r from-gray-300 via-white to-gray-400 bg-clip-text text-transparent">
+                    Other Tools We&apos;re Building
+                  </span>
                 </h2>
                 <p className="text-xl text-gray-400 max-w-3xl mx-auto">
                   Explore our upcoming projects designed for developers.
                 </p>
-              </motion.div>
+              </SmoothReveal>
 
-              <InteractiveSelector />
+              <SmoothReveal delay={0.3} duration={0.8} direction="up">
+                <InteractiveSelector />
+              </SmoothReveal>
             </div>
           </section>
         )}
@@ -468,45 +416,47 @@ export default function HomePage() {
         {/* Wave Section with Footer Content Below */}
         {!showIntro && (
           <section className="relative overflow-hidden bg-black">
-            <WaveDemo />
+            <SmoothReveal delay={0.2} duration={0.8} direction="up">
+              <WaveDemo />
+            </SmoothReveal>
             
             {/* Footer Content Below Wave */}
             <div className="pb-12 relative bg-black">
               <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid md:grid-cols-3 gap-8 mb-8">
-                  <div>
+                  <SmoothReveal delay={0.3} duration={0.6} direction="up">
                     <h3 className="text-xl font-bold text-white mb-4">
                       RemoteFlow
                     </h3>
                     <p className="text-gray-400 text-sm">
                       The ultimate platform for remote job seekers in the IT industry.
                     </p>
-                  </div>
-                  <div>
+                  </SmoothReveal>
+                  <SmoothReveal delay={0.4} duration={0.6} direction="up">
                     <h4 className="text-lg font-semibold text-white mb-4">Quick Links</h4>
                     <ul className="space-y-2 text-sm text-gray-400">
                       <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
                       <li><a href="#waitlist" className="hover:text-white transition-colors">Join Waitlist</a></li>
                       <li><a href="#testimonials" className="hover:text-white transition-colors">Testimonials</a></li>
                     </ul>
-                  </div>
-                  <div>
+                  </SmoothReveal>
+                  <SmoothReveal delay={0.5} duration={0.6} direction="up">
                     <h4 className="text-lg font-semibold text-white mb-4">Contact</h4>
                     <div className="space-y-2 text-sm text-gray-400">
                       <p>Email: hello@remoteflow.com</p>
                       <p>Twitter: @RemoteFlow</p>
                       <p>LinkedIn: RemoteFlow</p>
                     </div>
-                  </div>
+                  </SmoothReveal>
                 </div>
-                <div className="border-t border-white/10 pt-8 text-center text-sm text-gray-400">
+                <SmoothReveal delay={0.6} duration={0.6} direction="up" className="border-t border-white/10 pt-8 text-center text-sm text-gray-400">
                   <p>&copy; 2024 RemoteFlow. All rights reserved. Built with Next.js and Tailwind CSS.</p>
-                </div>
+                </SmoothReveal>
               </div>
             </div>
           </section>
         )}
       </main>
-    </>
+    </MobileOrientationCheck>
   );
 }

@@ -48,6 +48,7 @@ const InteractiveSelector = () => {
     url.searchParams.set('bg', option.image);
     url.searchParams.set('title', option.title);
     url.searchParams.set('subtitle', option.description);
+    url.searchParams.set('returnTo', '/?skipIntro=true');
     router.push(url.toString());
   };
 

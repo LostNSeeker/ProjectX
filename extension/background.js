@@ -2,6 +2,7 @@
 class BackgroundService {
     constructor() {
         this.setupMessageListener();
+        this.apiBaseUrl = 'http://localhost:8001/api';
     }
 
     setupMessageListener() {
@@ -26,12 +27,85 @@ class BackgroundService {
                     const answerResult = await this.generateAnswer(request);
                     sendResponse(answerResult);
                     break;
+                case 'getUserData':
+                    const userData = await this.getUserData();
+                    sendResponse(userData);
+                    break;
+                case 'generateFormFill':
+                    const fillResult = await this.generateFormFill(request);
+                    sendResponse(fillResult);
+                    break;
                 default:
                     sendResponse({ success: false, error: 'Unknown action' });
             }
         } catch (error) {
             sendResponse({ success: false, error: error.message });
         }
+    }
+
+    async getUserData() {
+        try {
+            const token = await this.getAuthToken();
+            if (!token) {
+                return { success: false, error: 'Not authenticated' };
+            }
+
+            const response = await fetch(`${this.apiBaseUrl}/onboarding`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch user data');
+            }
+
+            const data = await response.json();
+            return { success: true, data: data.data };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+
+    async generateFormFill(request) {
+        try {
+            const { formFields, jobDescription } = request;
+            const token = await this.getAuthToken();
+            
+            if (!token) {
+                return { success: false, error: 'Not authenticated' };
+            }
+
+            const response = await fetch(`${this.apiBaseUrl}/autofill/generate`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    form_fields: formFields,
+                    job_description: jobDescription
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to generate form fill data');
+            }
+
+            const data = await response.json();
+            return { success: true, data: data.generated_data };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+
+    async getAuthToken() {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['auth_token'], (result) => {
+                resolve(result.auth_token);
+            });
+        });
     }
 
     async extractJobData(request) {

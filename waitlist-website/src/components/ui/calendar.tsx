@@ -14,11 +14,11 @@ const CalendarDay: React.FC<{ day: number | string; isHeader?: boolean }> = ({
 
   return (
     <div
-      className={`col-span-1 row-span-1 flex h-8 w-8 items-center justify-center ${
+      className={`col-span-1 row-span-1 flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center ${
         isHeader ? "" : "rounded-xl"
       } ${randomBgWhite}`}
     >
-      <span className={`font-medium ${isHeader ? "text-xs" : "text-sm"}`}>
+      <span className={`font-medium ${isHeader ? "text-xs" : "text-xs sm:text-sm"}`}>
         {day}
       </span>
     </div>
@@ -47,7 +47,7 @@ export function Calendar() {
       ...Array(firstDayOfWeek).map((_, i) => (
         <div
           key={`empty-start-${i}`}
-          className="col-span-1 row-span-1 h-8 w-8"
+          className="col-span-1 row-span-1 h-6 w-6 sm:h-8 sm:w-8"
         />
       )),
       ...Array(daysInMonth)
@@ -62,23 +62,23 @@ export function Calendar() {
     <BentoCard height="h-auto" linkTo={bookingLink}>
       <div className=" grid h-full  gap-5">
         <div className="">
-          <h2 className="mb-4 text-lg md:text-3xl font-semibold">
+          <h2 className="mb-4 text-base sm:text-lg md:text-3xl font-semibold">
             Any questions about Design?
           </h2>
-          <p className="mb-2 text-xs md:text-md text-text-secondary">
+          <p className="mb-2 text-xs sm:text-sm md:text-md text-text-secondary">
             Feel free to reach out to me!
           </p>
           <Button className="mt-3 rounded-2xl">Book Now</Button>
         </div>
         <div className=" transition-all duration-500 ease-out md:group-hover:-right-12 md:group-hover:top-5">
           <div>
-            <div className="h-full w-[550px] rounded-[24px] border border-border-primary p-2 transition-colors duration-100 group-hover:border-indigo-400">
+            <div className="h-full w-full max-w-[550px] rounded-[24px] border border-border-primary p-2 transition-colors duration-100 group-hover:border-indigo-400">
               <div
                 className="h-full rounded-2xl border-2 border-[#A5AEB81F]/10  p-3"
                 style={{ boxShadow: "0px 2px 1.5px 0px #A5AEB852 inset" }}
               >
                 <div className="flex items-center space-x-2">
-                  <p className="text-sm ">
+                  <p className="text-xs sm:text-sm">
                     <span className="font-medium">
                       {currentMonth}, {currentYear}
                     </span>
@@ -86,7 +86,7 @@ export function Calendar() {
                   <span className="h-1 w-1 rounded-full ">&nbsp;</span>
                   <p className="text-xs text-text-tertiary">30 min call</p>
                 </div>
-                <div className="mt-4 grid grid-cols-7 grid-rows-5 gap-2 px-4">
+                <div className="mt-4 grid grid-cols-7 grid-rows-5 gap-1 sm:gap-2 px-2 sm:px-4">
                   {renderCalendarDays()}
                 </div>
               </div>

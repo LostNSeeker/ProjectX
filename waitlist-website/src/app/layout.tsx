@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import LenisProvider from "@/components/providers/lenis-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -84,7 +85,9 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body className="antialiased">
-        {children}
+        <LenisProvider>
+          {children}
+        </LenisProvider>
         {/* Global cursor canvas overlay */}
         <canvas id="canvas" className="pointer-events-none fixed inset-0 z-[9999]" style={{ width: "100vw", height: "100vh" }} />
         <Script id="init-global-canvas" strategy="afterInteractive">

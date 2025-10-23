@@ -120,3 +120,34 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Prevent layout shifts during hydration */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* Smooth scroll components initial state */
+.smooth-reveal {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.smooth-stagger-item {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Prevent FOUC (Flash of Unstyled Content) */
+[data-smooth-reveal] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+[data-smooth-stagger] {
+  opacity: 1;
+  transform: translateY(0);
+}

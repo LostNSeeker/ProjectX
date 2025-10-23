@@ -113,8 +113,8 @@ class Particle {
   }
 
   private generateRandomPos(x: number, y: number, mag: number): Vector2D {
-    const randomX = Math.random() * 1920
-    const randomY = Math.random() * 1080
+    const randomX = Math.random() * window.innerWidth
+    const randomY = Math.random() * window.innerHeight
 
     const direction = {
       x: randomX - x,
@@ -142,7 +142,7 @@ const DEFAULT_WORDS = ["HELLO", "21st.dev", "ParticleTextEffect", "BY", "KAINXU"
 
 export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffectProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const animationRef = useRef<number>()
+  const animationRef = useRef<number | undefined>(undefined)
   const particlesRef = useRef<Particle[]>([])
   const frameCountRef = useRef(0)
   const wordIndexRef = useRef(0)
@@ -152,8 +152,8 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
   const drawAsPoints = true
 
   const generateRandomPos = (x: number, y: number, mag: number): Vector2D => {
-    const randomX = Math.random() * 1920
-    const randomY = Math.random() * 1080
+    const randomX = Math.random() * window.innerWidth
+    const randomY = Math.random() * window.innerHeight
 
     const direction = {
       x: randomX - x,
@@ -173,22 +173,31 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
   }
 
   const nextWord = (word: string, canvas: HTMLCanvasElement) => {
-    // const ctx = canvas.getContext("2d")!
-
     // Create off-screen canvas for text rendering
     const offscreenCanvas = document.createElement("canvas")
-    offscreenCanvas.width = canvas.width
-    offscreenCanvas.height = canvas.height
+    const rect = canvas.getBoundingClientRect()
+    
+    // Ensure minimum dimensions for mobile
+    const width = Math.max(rect.width, 300)
+    const height = Math.max(rect.height, 200)
+    
+    offscreenCanvas.width = width
+    offscreenCanvas.height = height
     const offscreenCtx = offscreenCanvas.getContext("2d")!
 
-    // Draw text
+    // Calculate responsive font size with mobile considerations
+    const fontSize = Math.min(width, height) * 0.12
+    const minFontSize = 24
+    const maxFontSize = 120
+    const finalFontSize = Math.max(minFontSize, Math.min(fontSize, maxFontSize))
+    
     offscreenCtx.fillStyle = "white"
-    offscreenCtx.font = "bold 200px Arial"
+    offscreenCtx.font = `bold ${finalFontSize}px Arial`
     offscreenCtx.textAlign = "center"
     offscreenCtx.textBaseline = "middle"
-    offscreenCtx.fillText(word, canvas.width / 2, canvas.height / 2)
+    offscreenCtx.fillText(word, width / 2, height / 2)
 
-    const imageData = offscreenCtx.getImageData(0, 0, canvas.width, canvas.height)
+    const imageData = offscreenCtx.getImageData(0, 0, width, height)
     const pixels = imageData.data
 
     // Generate new color
@@ -218,8 +227,8 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
       const alpha = pixels[pixelIndex + 3]
 
       if (alpha > 0) {
-        const x = (pixelIndex / 4) % canvas.width
-        const y = Math.floor(pixelIndex / 4 / canvas.width)
+        const x = (pixelIndex / 4) % width
+        const y = Math.floor(pixelIndex / 4 / width)
 
         let particle: Particle
 
@@ -230,7 +239,7 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
         } else {
           particle = new Particle()
 
-          const randomPos = generateRandomPos(canvas.width / 2, canvas.height / 2, (canvas.width + canvas.height) / 2)
+          const randomPos = generateRandomPos(width / 2, height / 2, (width + height) / 2)
           particle.pos.x = randomPos.x
           particle.pos.y = randomPos.y
 
@@ -306,7 +315,7 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
 
     // Auto-advance words
     frameCountRef.current++
-    if (frameCountRef.current % 240 === 0) {
+    if (frameCountRef.current % 180 === 0) {
       wordIndexRef.current = (wordIndexRef.current + 1) % words.length
       nextWord(words[wordIndexRef.current], canvas)
     }
@@ -318,11 +327,23 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
     const canvas = canvasRef.current
     if (!canvas) return
 
-    canvas.width = 1920
-    canvas.height = 1080
+    // Set canvas dimensions based on screen size
+    const updateCanvasSize = () => {
+      const rect = canvas.getBoundingClientRect()
+      canvas.width = rect.width * window.devicePixelRatio
+      canvas.height = rect.height * window.devicePixelRatio
+      
+      const ctx = canvas.getContext("2d")!
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio)
+    }
 
-    // Initialize with first word
-    nextWord(words[0], canvas)
+    updateCanvasSize()
+    window.addEventListener('resize', updateCanvasSize)
+
+    // Initialize with first word after a delay
+    const initTimer = setTimeout(() => {
+      nextWord(words[0], canvas)
+    }, 500)
 
     // Start animation
     animate()
@@ -357,6 +378,8 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
     canvas.addEventListener("contextmenu", handleContextMenu)
 
     return () => {
+      clearTimeout(initTimer)
+      window.removeEventListener('resize', updateCanvasSize)
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current)
       }

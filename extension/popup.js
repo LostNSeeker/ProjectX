@@ -2,29 +2,19 @@
 class PopupManager {
     constructor() {
         this.initializeElements();
-        this.loadSettings();
-        this.loadStoredJobs();
+        this.checkAuthStatus();
         this.setupEventListeners();
-        this.updateStatus('Ready');
+        this.updateStatus('Checking authentication...');
     }
 
     initializeElements() {
-        // API Configuration
-        this.apiProvider = document.getElementById('apiProvider');
-        this.apiKey = document.getElementById('apiKey');
-        this.saveConfigBtn = document.getElementById('saveConfig');
-
-        // Resume Data
-        this.resumeData = document.getElementById('resumeData');
-        this.saveResumeBtn = document.getElementById('saveResume');
+        // Authentication
+        this.authStatus = document.getElementById('authStatus');
+        this.loginBtn = document.getElementById('loginBtn');
+        this.logoutBtn = document.getElementById('logoutBtn');
 
         // Actions
-        this.scrapeJobBtn = document.getElementById('scrapeJob');
         this.autoFillFormBtn = document.getElementById('autoFillForm');
-
-        // Storage
-        this.storedJobsContainer = document.getElementById('storedJobs');
-        this.clearJobsBtn = document.getElementById('clearJobs');
 
         // Logs
         this.logsContainer = document.getElementById('logs');
@@ -35,65 +25,68 @@ class PopupManager {
     }
 
     setupEventListeners() {
-        this.saveConfigBtn.addEventListener('click', () => this.saveConfiguration());
-        this.saveResumeBtn.addEventListener('click', () => this.saveResume());
-        this.scrapeJobBtn.addEventListener('click', () => this.scrapeCurrentPage());
+        this.loginBtn.addEventListener('click', () => this.openWebApp());
+        this.logoutBtn.addEventListener('click', () => this.logout());
         this.autoFillFormBtn.addEventListener('click', () => this.autoFillCurrentForm());
-        this.clearJobsBtn.addEventListener('click', () => this.clearStoredJobs());
         this.clearLogsBtn.addEventListener('click', () => this.clearLogs());
     }
 
-    async loadSettings() {
+    async checkAuthStatus() {
         try {
-            const result = await chrome.storage.local.get(['apiProvider', 'apiKey', 'resumeData']);
+            const result = await chrome.storage.local.get(['auth_token']);
             
-            if (result.apiProvider) {
-                this.apiProvider.value = result.apiProvider;
-            }
-            if (result.apiKey) {
-                this.apiKey.value = result.apiKey;
-            }
-            if (result.resumeData) {
-                this.resumeData.value = result.resumeData;
+            if (result.auth_token) {
+                // Verify token is still valid
+                const response = await chrome.runtime.sendMessage({
+                    action: 'getUserData'
+                });
+                
+                if (response.success) {
+                    this.showAuthenticatedState();
+                    this.log('Authenticated with web app', 'success');
+                } else {
+                    this.showUnauthenticatedState();
+                    this.log('Authentication expired', 'warning');
+                }
+            } else {
+                this.showUnauthenticatedState();
+                this.log('Not authenticated', 'info');
             }
         } catch (error) {
-            this.log('Error loading settings: ' + error.message, 'error');
+            this.log('Error checking authentication: ' + error.message, 'error');
+            this.showUnauthenticatedState();
         }
     }
 
-    async saveConfiguration() {
-        const config = {
-            apiProvider: this.apiProvider.value,
-            apiKey: this.apiKey.value
-        };
-
-        if (!config.apiKey.trim()) {
-            this.log('Please enter an API key', 'warning');
-            return;
-        }
-
-        try {
-            await chrome.storage.local.set(config);
-            this.log('Configuration saved successfully', 'success');
-            this.updateStatus('Configured');
-        } catch (error) {
-            this.log('Error saving configuration: ' + error.message, 'error');
-        }
+    showAuthenticatedState() {
+        this.authStatus.textContent = '✅ Connected to web app';
+        this.authStatus.className = 'auth-status authenticated';
+        this.loginBtn.style.display = 'none';
+        this.logoutBtn.style.display = 'block';
+        this.autoFillFormBtn.disabled = false;
+        this.updateStatus('Ready to auto-fill forms');
     }
 
-    async saveResume() {
-        const resumeData = this.resumeData.value.trim();
-        
-        if (!resumeData) {
-            this.log('Please enter your resume/CV data', 'warning');
-            return;
-        }
+    showUnauthenticatedState() {
+        this.authStatus.textContent = '❌ Not connected to web app';
+        this.authStatus.className = 'auth-status unauthenticated';
+        this.loginBtn.style.display = 'block';
+        this.logoutBtn.style.display = 'none';
+        this.autoFillFormBtn.disabled = true;
+        this.updateStatus('Please log in to web app first');
+    }
 
+    openWebApp() {
+        chrome.tabs.create({ url: 'http://localhost:5173' });
+    }
+
+    async logout() {
         try {
-            await chrome.storage.local.set({ resumeData });
-            this.log('Resume data saved successfully', 'success');
+            await chrome.storage.local.remove(['auth_token']);
+            this.showUnauthenticatedState();
+            this.log('Logged out successfully', 'info');
         } catch (error) {
-            this.log('Error saving resume: ' + error.message, 'error');
+            this.log('Error logging out: ' + error.message, 'error');
         }
     }
 
@@ -144,32 +137,21 @@ class PopupManager {
         try {
             const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
             
-            // Check if we have stored jobs
-            const result = await chrome.storage.local.get(['storedJobs']);
-            if (!result.storedJobs || result.storedJobs.length === 0) {
-                this.log('No jobs stored. Please scrape a job page first.', 'warning');
-                this.updateStatus('No Jobs Stored', 'warning');
-                return;
-            }
-
-            // Check if we have resume data
-            const resumeResult = await chrome.storage.local.get(['resumeData']);
-            if (!resumeResult.resumeData) {
-                this.log('Please add your resume/CV data first', 'warning');
-                this.updateStatus('Resume Required', 'warning');
+            // Check authentication
+            const authResult = await chrome.storage.local.get(['auth_token']);
+            if (!authResult.auth_token) {
+                this.log('Please log in to the web app first', 'warning');
+                this.updateStatus('Authentication Required', 'warning');
                 return;
             }
 
             // Send message to content script to fill the form
             const response = await chrome.tabs.sendMessage(tab.id, {
-                action: 'autoFillForm',
-                config: await chrome.storage.local.get(['apiProvider', 'apiKey']),
-                resumeData: resumeResult.resumeData,
-                jobs: result.storedJobs
+                action: 'autoFillForm'
             });
 
             if (response.success) {
-                this.log('Form filled successfully', 'success');
+                this.log(`Form filled successfully: ${response.message}`, 'success');
                 this.updateStatus('Form Filled', 'success');
             } else {
                 this.log('Failed to fill form: ' + response.error, 'error');

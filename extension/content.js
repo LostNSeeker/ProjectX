@@ -2,7 +2,26 @@
 class ContentScript {
     constructor() {
         this.setupMessageListener();
+        this.setupTokenSync();
         this.detectPageType();
+    }
+
+    setupTokenSync() {
+        // Listen for token updates from the web app
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'AUTH_TOKEN_UPDATE') {
+                this.storeAuthToken(event.data.token);
+            }
+        });
+    }
+
+    async storeAuthToken(token) {
+        try {
+            await chrome.storage.local.set({ auth_token: token });
+            console.log('Auth token synced with extension');
+        } catch (error) {
+            console.error('Failed to store auth token:', error);
+        }
     }
 
     setupMessageListener() {
@@ -179,25 +198,179 @@ class ContentScript {
                 return { success: false, error: 'No forms found on page' };
             }
 
-            // Analyze form structure
-            const formAnalysis = await this.analyzeForm(forms[0], request.config);
+            // Scrape form fields for intelligent analysis
+            const formFields = this.scrapeFormFields();
             
-            if (!formAnalysis.success) {
-                return { success: false, error: formAnalysis.error };
-            }
-
-            // Generate and fill form data
-            const fillResult = await this.generateAndFillForm(
-                formAnalysis.fields, 
-                request.jobs, 
-                request.resumeData, 
-                request.config
-            );
+            // Get intelligent form filling data from backend
+            const intelligentData = await this.getIntelligentFormData(formFields);
+            
+            // Fill the form with intelligent data
+            const fillResult = await this.fillFormWithIntelligentData(intelligentData, forms[0]);
 
             return fillResult;
         } catch (error) {
             return { success: false, error: error.message };
         }
+    }
+
+    scrapeFormFields() {
+        const formFields = [];
+        const forms = document.querySelectorAll('form');
+        
+        forms.forEach((form, formIndex) => {
+            const inputs = form.querySelectorAll('input, textarea, select');
+            
+            inputs.forEach((input, inputIndex) => {
+                const fieldInfo = {
+                    name: input.name || input.id || `field_${inputIndex}`,
+                    type: input.type || input.tagName.toLowerCase(),
+                    placeholder: input.placeholder || '',
+                    label: this.getFieldLabel(input),
+                    required: input.required || false,
+                    formIndex: formIndex,
+                    inputIndex: inputIndex
+                };
+                
+                formFields.push(fieldInfo);
+            });
+        });
+        
+        return formFields;
+    }
+
+    getFieldLabel(input) {
+        // Try to find associated label
+        if (input.id) {
+            const label = document.querySelector(`label[for="${input.id}"]`);
+            if (label) return label.textContent.trim();
+        }
+        
+        // Try to find parent label
+        const parentLabel = input.closest('label');
+        if (parentLabel) return parentLabel.textContent.trim();
+        
+        // Try to find nearby text
+        const nearbyText = input.previousElementSibling?.textContent?.trim();
+        if (nearbyText) return nearbyText;
+        
+        return '';
+    }
+
+    async getIntelligentFormData(formFields) {
+        try {
+            const token = await this.getAuthToken();
+            if (!token) {
+                console.log('No auth token found, using basic form data');
+                return {};
+            }
+
+            const response = await fetch('http://localhost:8001/api/autofill/generate', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    form_fields: formFields
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                return data.autofill_data || {};
+            } else {
+                console.error('Failed to get intelligent form data:', response.statusText);
+                return {};
+            }
+        } catch (error) {
+            console.error('Error getting intelligent form data:', error);
+            return {};
+        }
+    }
+
+    async getAuthToken() {
+        try {
+            const result = await chrome.storage.local.get(['auth_token']);
+            return result.auth_token;
+        } catch (error) {
+            console.error('Error getting auth token:', error);
+            return null;
+        }
+    }
+
+    async fillFormWithIntelligentData(intelligentData, form) {
+        try {
+            let filled = 0;
+            const errors = [];
+
+            const inputs = form.querySelectorAll('input, textarea, select');
+            
+            inputs.forEach((input, index) => {
+                try {
+                    const fieldName = this.getFieldName(input);
+                    const value = this.getIntelligentValue(fieldName, input, intelligentData);
+                    
+                    if (value && this.shouldFillField(input, value)) {
+                        this.fillField(input, value);
+                        filled++;
+                    }
+                } catch (error) {
+                    errors.push(`Input ${index + 1}: ${error.message}`);
+                }
+            });
+
+            return {
+                success: true,
+                filled: filled,
+                errors: errors
+            };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+
+    getFieldName(input) {
+        // Try multiple ways to identify the field
+        if (input.name) return input.name.toLowerCase();
+        if (input.id) return input.id.toLowerCase();
+        if (input.placeholder) return input.placeholder.toLowerCase();
+        if (input.getAttribute('data-testid')) return input.getAttribute('data-testid').toLowerCase();
+        
+        // Try to get from label
+        const label = this.getFieldLabel(input);
+        if (label) return label.toLowerCase();
+        
+        return '';
+    }
+
+    getIntelligentValue(fieldName, input, intelligentData) {
+        // Direct field name match
+        if (intelligentData[fieldName]) {
+            return intelligentData[fieldName];
+        }
+
+        // Try to match by common field patterns
+        const fieldPatterns = {
+            'name': ['name', 'fullname', 'full_name', 'firstname', 'lastname'],
+            'email': ['email', 'e-mail', 'mail'],
+            'phone': ['phone', 'telephone', 'mobile', 'cell'],
+            'address': ['address', 'street', 'location'],
+            'experience': ['experience', 'work', 'employment', 'background'],
+            'education': ['education', 'degree', 'school', 'university'],
+            'skills': ['skills', 'abilities', 'competencies'],
+            'cover': ['cover', 'letter', 'message', 'additional'],
+            'resume': ['resume', 'cv', 'curriculum']
+        };
+
+        for (const [key, patterns] of Object.entries(fieldPatterns)) {
+            for (const pattern of patterns) {
+                if (fieldName.includes(pattern) && intelligentData[key]) {
+                    return intelligentData[key];
+                }
+            }
+        }
+
+        return null;
     }
 
     async analyzeForm(form, config) {
@@ -214,6 +387,187 @@ class ContentScript {
             return response;
         } catch (error) {
             return { success: false, error: error.message };
+        }
+    }
+
+    extractJobDescription() {
+        // Extract job description from various common selectors
+        const selectors = [
+            '.job-description',
+            '.job-details',
+            '.description',
+            '.content',
+            '[data-testid*="description"]',
+            '[class*="description"]',
+            '[class*="content"]'
+        ];
+        
+        let description = '';
+        for (const selector of selectors) {
+            const element = document.querySelector(selector);
+            if (element) {
+                description = element.textContent || element.innerText || '';
+                if (description.length > 100) break; // Found substantial content
+            }
+        }
+        
+        // Fallback to page title and meta description
+        if (!description) {
+            const metaDesc = document.querySelector('meta[name="description"]');
+            description = metaDesc ? metaDesc.getAttribute('content') : '';
+            if (!description) {
+                description = document.title;
+            }
+        }
+        
+        return description.substring(0, 2000); // Limit description length
+    }
+
+    async fillFormWithData(generatedData, form) {
+        try {
+            const filledFields = [];
+            const skippedFields = [];
+            
+            // Get all form inputs
+            const inputs = form.querySelectorAll('input, textarea, select');
+            
+            for (const input of inputs) {
+                const fieldName = this.getFieldName(input);
+                const fieldType = input.type || input.tagName.toLowerCase();
+                
+                // Skip hidden fields and submit buttons
+                if (fieldType === 'hidden' || fieldType === 'submit' || fieldType === 'button') {
+                    continue;
+                }
+                
+                // Find matching data from generated response
+                const value = this.findMatchingValue(fieldName, generatedData);
+                
+                if (value) {
+                    try {
+                        this.fillInput(input, value);
+                        filledFields.push({
+                            name: fieldName,
+                            type: fieldType,
+                            value: value
+                        });
+                    } catch (error) {
+                        skippedFields.push({
+                            name: fieldName,
+                            type: fieldType,
+                            error: error.message
+                        });
+                    }
+                } else {
+                    skippedFields.push({
+                        name: fieldName,
+                        type: fieldType,
+                        reason: 'No matching data found'
+                    });
+                }
+            }
+            
+            return {
+                success: true,
+                filledFields: filledFields,
+                skippedFields: skippedFields,
+                message: `Successfully filled ${filledFields.length} fields`
+            };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+
+    getFieldName(input) {
+        // Try various ways to identify the field name
+        return input.name || 
+               input.id || 
+               input.placeholder || 
+               input.getAttribute('data-testid') ||
+               input.getAttribute('aria-label') ||
+               'unknown';
+    }
+
+    findMatchingValue(fieldName, generatedData) {
+        // Simple matching logic - in a real implementation, this would be more sophisticated
+        const lowerFieldName = fieldName.toLowerCase();
+        
+        // Look for exact matches first
+        for (const [key, value] of Object.entries(generatedData)) {
+            if (key.toLowerCase().includes(lowerFieldName) || 
+                lowerFieldName.includes(key.toLowerCase())) {
+                return value;
+            }
+        }
+        
+        // Look for common field patterns
+        if (lowerFieldName.includes('email')) {
+            return generatedData.email || generatedData.email_address;
+        }
+        if (lowerFieldName.includes('phone')) {
+            return generatedData.phone || generatedData.phone_number;
+        }
+        if (lowerFieldName.includes('name') && !lowerFieldName.includes('last')) {
+            return generatedData.first_name || generatedData.full_name;
+        }
+        if (lowerFieldName.includes('last')) {
+            return generatedData.last_name;
+        }
+        if (lowerFieldName.includes('address')) {
+            return generatedData.address;
+        }
+        
+        return null;
+    }
+
+    fillInput(input, value) {
+        const fieldType = input.type || input.tagName.toLowerCase();
+        
+        switch (fieldType) {
+            case 'text':
+            case 'email':
+            case 'tel':
+            case 'url':
+            case 'password':
+                input.value = value;
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+                break;
+                
+            case 'textarea':
+                input.value = value;
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+                break;
+                
+            case 'select':
+                const option = Array.from(input.options).find(opt => 
+                    opt.value.toLowerCase() === value.toLowerCase() ||
+                    opt.text.toLowerCase() === value.toLowerCase()
+                );
+                if (option) {
+                    input.value = option.value;
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+                break;
+                
+            case 'radio':
+                const radioGroup = document.querySelectorAll(`input[name="${input.name}"]`);
+                for (const radio of radioGroup) {
+                    if (radio.value.toLowerCase() === value.toLowerCase()) {
+                        radio.checked = true;
+                        radio.dispatchEvent(new Event('change', { bubbles: true }));
+                        break;
+                    }
+                }
+                break;
+                
+            case 'checkbox':
+                if (value.toLowerCase() === 'true' || value.toLowerCase() === 'yes') {
+                    input.checked = true;
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+                break;
         }
     }
 

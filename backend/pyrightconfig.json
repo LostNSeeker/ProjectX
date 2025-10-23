@@ -1,0 +1,13 @@
+{
+  "include": [
+    "."
+  ],
+  "exclude": [
+    "venv",
+    "**/node_modules"
+  ],
+  "pythonPath": "./venv/bin/python",
+  "venvPath": ".",
+  "reportMissingImports": "warning",
+  "reportMissingModuleSource": "warning"
+}
