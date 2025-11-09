@@ -56,7 +56,7 @@ def create_admin_user():
     """Create admin user if it doesn't exist"""
     users = load_users()
     admin_email = 'admin@projectx.com'
-    admin_password = 'admin123'
+    admin_password = 'password123'
     
     if admin_email not in users:
         users[admin_email] = {
@@ -71,7 +71,10 @@ def create_admin_user():
         save_users(users)
         print(f"Admin user created: {admin_email} / {admin_password}")
     else:
-        print(f"Admin user already exists: {admin_email} / {admin_password}")
+        # Update existing admin password
+        users[admin_email]['password_hash'] = generate_password_hash(admin_password)
+        save_users(users)
+        print(f"Admin user password updated: {admin_email} / {admin_password}")
 
 def load_onboarding_data():
     try:

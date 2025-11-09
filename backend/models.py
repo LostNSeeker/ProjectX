@@ -13,6 +13,8 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     payment_completed = db.Column(db.Boolean, default=False)
     payment_intent_id = db.Column(db.String(100), nullable=True)
+    is_admin = db.Column(db.Boolean, default=False)
+    role = db.Column(db.String(50), default='user')
     
     # Relationships
     onboarding_data = db.relationship('OnboardingData', backref='user', uselist=False, cascade='all, delete-orphan')
@@ -23,7 +25,9 @@ class User(db.Model):
             'id': self.id,
             'email': self.email,
             'created_at': self.created_at.isoformat(),
-            'payment_completed': self.payment_completed
+            'payment_completed': self.payment_completed,
+            'is_admin': self.is_admin if hasattr(self, 'is_admin') else False,
+            'role': self.role if hasattr(self, 'role') else 'user'
         }
 
 class OnboardingData(db.Model):

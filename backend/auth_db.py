@@ -377,10 +377,114 @@ def update_profile():
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
+# Admin endpoints
+@app.route('/api/admin/users', methods=['GET'])
+@jwt_required()
+def get_all_users():
+    """Get all users (admin only)"""
+    try:
+        email = get_jwt_identity()
+        user = User.query.filter_by(email=email).first()
+        
+        if not user or not user.is_admin:
+            return jsonify({'error': 'Admin access required'}), 403
+        
+        # Return all users (without password hashes)
+        users = User.query.all()
+        users_list = [{
+            'id': u.id,
+            'email': u.email,
+            'created_at': u.created_at.isoformat(),
+            'payment_completed': u.payment_completed,
+            'is_admin': u.is_admin,
+            'role': u.role
+        } for u in users]
+        
+        return jsonify(users_list), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/stats', methods=['GET'])
+@jwt_required()
+def get_admin_stats():
+    """Get admin statistics"""
+    try:
+        email = get_jwt_identity()
+        user = User.query.filter_by(email=email).first()
+        
+        if not user or not user.is_admin:
+            return jsonify({'error': 'Admin access required'}), 403
+        
+        total_users = User.query.count()
+        admin_users = User.query.filter_by(is_admin=True).count()
+        paid_users = User.query.filter_by(payment_completed=True).count()
+        users_with_onboarding = db.session.query(OnboardingData).count()
+        
+        from datetime import timedelta
+        recent_cutoff = datetime.utcnow() - timedelta(days=7)
+        recent_users = User.query.filter(User.created_at >= recent_cutoff).count()
+        
+        stats = {
+            'total_users': total_users,
+            'admin_users': admin_users,
+            'paid_users': paid_users,
+            'users_with_onboarding': users_with_onboarding,
+            'recent_users': recent_users
+        }
+        
+        return jsonify(stats), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/onboarding-data', methods=['GET'])
+@jwt_required()
+def get_all_onboarding_data():
+    """Get all onboarding data (admin only)"""
+    try:
+        email = get_jwt_identity()
+        user = User.query.filter_by(email=email).first()
+        
+        if not user or not user.is_admin:
+            return jsonify({'error': 'Admin access required'}), 403
+        
+        onboarding_data = OnboardingData.query.all()
+        data_list = [od.to_dict() for od in onboarding_data]
+        
+        return jsonify(data_list), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 # Create database tables
 def create_tables():
     with app.app_context():
         db.create_all()
+        
+        # Create admin user if it doesn't exist
+        admin = User.query.filter_by(email='admin@projectx.com').first()
+        if not admin:
+            from werkzeug.security import generate_password_hash
+            admin = User(
+                id='admin_user_001',
+                email='admin@projectx.com',
+                password_hash=generate_password_hash('password123'),
+                payment_completed=True,
+                is_admin=True,
+                role='admin'
+            )
+            db.session.add(admin)
+            db.session.commit()
+            print("Admin user created: admin@projectx.com / password123")
+        else:
+            # Update admin password if needed
+            from werkzeug.security import generate_password_hash, check_password_hash
+            if not check_password_hash(admin.password_hash, 'password123'):
+                admin.password_hash = generate_password_hash('password123')
+                db.session.commit()
+                print("Admin user password updated: admin@projectx.com / password123")
+        
         print("Database tables created successfully")
 
 if __name__ == '__main__':

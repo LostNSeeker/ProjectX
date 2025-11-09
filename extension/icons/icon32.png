@@ -1,6 +1,0 @@
-# Icon placeholder for 32x32
-<svg width="32" height="32" xmlns="http://www.w3.org/2000/svg">
-  <rect width="32" height="32" fill="#4F46E5"/>
-  <rect x="8" y="10" width="16" height="10" fill="white"/>
-  <rect x="14" y="8" width="4" height="5" fill="white"/>
-</svg>
