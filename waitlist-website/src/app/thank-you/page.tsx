@@ -1,17 +1,21 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
+import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Home, CheckCircle, Mail, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 
-export default function ThankYouPage() {
+function ThankYouPageContent() {
   const params = useSearchParams();
   const router = useRouter();
   const returnTo = params.get("returnTo") || "/";
 
   const handleBack = () => {
-    router.push(returnTo);
+    // Use window.location to avoid webpack issues
+    if (typeof window !== 'undefined') {
+      window.location.href = returnTo;
+    }
   };
 
   return (
@@ -116,6 +120,18 @@ export default function ThankYouPage() {
         </motion.div>
       </motion.div>
     </main>
+  );
+}
+
+export default function ThankYouPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-white">Loading...</div>
+      </main>
+    }>
+      <ThankYouPageContent />
+    </Suspense>
   );
 }
 
