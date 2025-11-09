@@ -31,22 +31,38 @@ export default function HomePage() {
 
   useEffect(() => {
     // Check if we're coming back from another page
+    if (typeof window === 'undefined') return;
+    
     const urlParams = new URLSearchParams(window.location.search);
     const skipIntro = urlParams.get('skipIntro');
     
-    if (skipIntro === 'true') {
+    // Check localStorage for previous visit
+    const hasVisitedBefore = localStorage.getItem('projectx_has_visited');
+    
+    if (skipIntro === 'true' || hasVisitedBefore === 'true') {
       setShowIntro(false);
+      // Mark as visited if not already marked
+      if (!hasVisitedBefore) {
+        localStorage.setItem('projectx_has_visited', 'true');
+      }
     } else {
+      // Show intro for all words to complete
+      // 3 words * ~7 seconds each = ~21 seconds, add buffer for transitions
       const timer = setTimeout(() => {
         setShowIntro(false);
-      }, 8000);
+        // Mark as visited after intro completes
+        localStorage.setItem('projectx_has_visited', 'true');
+      }, 22000); // 22 seconds to ensure all words are seen
       return () => clearTimeout(timer);
     }
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    router.push("/processing");
+    // Use window.location to avoid webpack issues with router.push
+    if (typeof window !== 'undefined') {
+      window.location.href = "/processing";
+    }
   };
 
   const jobRoles = [
@@ -63,22 +79,22 @@ export default function HomePage() {
 
   const testimonials = [
     {
-      quote: "RemoteFlow helped me land a remote role at a top startup! The AI matching was spot-on and I found my dream job in just 2 weeks.",
-      name: "Sarah Chen",
-      designation: "Full Stack Developer at TechCorp",
-      src: "👩‍💻",
+      quote: "ProjectX has revolutionized how we approach remote job searching. The intelligent matching system saved me countless hours and connected me with opportunities I wouldn't have found otherwise.",
+      name: "Akshat",
+      designation: "Co-Founder & Lead Developer",
+      src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces",
     },
     {
-      quote: "I've tried every job board out there, but RemoteFlow is in a league of its own. The personalized recommendations actually understand my skills.",
-      name: "Marcus Rodriguez", 
-      designation: "Senior Frontend Engineer at InnovateLab",
-      src: "👨‍💻",
+      quote: "Building ProjectX has been an incredible journey. Our AI-powered platform doesn't just match jobs—it understands career aspirations and company culture to create perfect alignments.",
+      name: "Prabaha", 
+      designation: "Co-Founder & Tech Architect",
+      src: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=faces",
     },
     {
-      quote: "The remote job market can be overwhelming, but RemoteFlow made it simple. I love how they verify companies and only show legitimate remote positions.",
+      quote: "The remote job market can be overwhelming, but ProjectX made it simple. I love how they verify companies and only show legitimate remote positions.",
       name: "Emily Johnson",
       designation: "Backend Developer at CloudScale", 
-      src: "👩‍🔬",
+      src: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=faces",
     },
   ];
 
@@ -95,7 +111,7 @@ export default function HomePage() {
             className="fixed inset-0 z-[100] flex items-center justify-center bg-black"
           >
             <div className="w-full h-full">
-              <ParticleTextEffect words={["Welcome to", "THE Elite section"," of Internet"]} />
+              <ParticleTextEffect words={["Welcome to", "The Elite section"," of Internet"]} />
             </div>
           </motion.div>
         )}
@@ -234,28 +250,7 @@ export default function HomePage() {
           </section>
         )}
 
-        {/* Testimonials */}
-        {!showIntro && (
-          <section id="testimonials" className="py-8 relative overflow-hidden">
-            <div className="absolute inset-0 bg-black" />
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-              <SmoothReveal delay={0.1} duration={0.8} direction="up" className="text-center mb-12">
-                <h2 className="text-4xl lg:text-6xl font-bold mb-6">
-                  <span className="bg-gradient-to-r from-gray-300 via-white to-gray-400 bg-clip-text text-transparent">
-                    What Developers Say
-                  </span>
-                </h2>
-                <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-                  Don&apos;t just take our word for it. Here&apos;s what real developers are saying about RemoteFlow.
-                </p>
-              </SmoothReveal>
 
-              <SmoothReveal delay={0.3} duration={0.8} direction="up">
-                <AnimatedTestimonials testimonials={testimonials} />
-              </SmoothReveal>
-            </div>
-          </section>
-        )}
 
         {/* Calendar + Waitlist Combined */}
         {!showIntro && (
@@ -270,17 +265,25 @@ export default function HomePage() {
                   </span>
                 </h2>
                 <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-                  Be among the first to experience RemoteFlow. Reserve your spot today and get early access.
+                  Be among the first to experience ProjectX. Reserve your spot today and get early access.
                 </p>
               </SmoothReveal>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-start">
                 <div className="w-full flex justify-center mb-8 lg:mb-0">
                   <SmoothReveal delay={0.2} duration={0.6} direction="left">
-                    <div className="bg-black rounded-2xl p-4 sm:p-6 border border-white/10 shadow-2xl w-full max-w-sm">
+                    <div className="bg-black rounded-2xl p-4 sm:p-6 border border-white/10 shadow-2xl w-full max-w-md sm:max-w-lg">
                       <Calendar />
                       <div className="mt-6 flex justify-center">
-                        <Button onClick={() => router.push('/processing')} className="bg-white text-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-all duration-200 w-full sm:w-auto">
+                        <Button 
+                          onClick={() => {
+                            // Use window.location to avoid webpack issues
+                            if (typeof window !== 'undefined') {
+                              window.location.href = '/processing';
+                            }
+                          }} 
+                          className="bg-white text-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-all duration-200 w-full sm:w-auto"
+                        >
                           Book a Demo
                         </Button>
                       </div>
@@ -303,7 +306,7 @@ export default function HomePage() {
                         You&apos;re in! 🎉
                       </h3>
                       <p className="text-gray-400 mb-6">
-                        Get ready to code remotely like a pro! We&apos;ll notify you when RemoteFlow launches.
+                        Get ready to code remotely like a pro! We&apos;ll notify you when ProjectX launches.
                       </p>
                     </motion.div>
                   ) : (
@@ -426,7 +429,7 @@ export default function HomePage() {
                 <div className="grid md:grid-cols-3 gap-8 mb-8">
                   <SmoothReveal delay={0.3} duration={0.6} direction="up">
                     <h3 className="text-xl font-bold text-white mb-4">
-                      RemoteFlow
+                      ProjectX
                     </h3>
                     <p className="text-gray-400 text-sm">
                       The ultimate platform for remote job seekers in the IT industry.
@@ -443,14 +446,14 @@ export default function HomePage() {
                   <SmoothReveal delay={0.5} duration={0.6} direction="up">
                     <h4 className="text-lg font-semibold text-white mb-4">Contact</h4>
                     <div className="space-y-2 text-sm text-gray-400">
-                      <p>Email: hello@remoteflow.com</p>
-                      <p>Twitter: @RemoteFlow</p>
-                      <p>LinkedIn: RemoteFlow</p>
+                      <p>Email: hello@projectx.com</p>
+                      <p>Twitter: @ProjectX</p>
+                      <p>LinkedIn: ProjectX</p>
                     </div>
                   </SmoothReveal>
                 </div>
                 <SmoothReveal delay={0.6} duration={0.6} direction="up" className="border-t border-white/10 pt-8 text-center text-sm text-gray-400">
-                  <p>&copy; 2024 RemoteFlow. All rights reserved. Built with Next.js and Tailwind CSS.</p>
+                  <p>&copy; 2024 ProjectX. All rights reserved. Built with Next.js and Tailwind CSS.</p>
                 </SmoothReveal>
               </div>
             </div>

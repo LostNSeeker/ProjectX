@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { FaCampground, FaFire, FaTint, FaHotTub, FaHiking } from 'react-icons/fa';
@@ -9,47 +11,65 @@ const InteractiveSelector = () => {
   
   const options = useMemo(() => [
     {
-      title: "Luxury Tent",
-      description: "Cozy glamping under the stars",
-      image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
-      icon: <FaCampground size={24} className="text-white" />
+      title: "CollegeSphere",
+      description: "Tool for searching college but give better info about college",
+      image: "/CollegeSphere.png",
+      icon: <FaCampground size={24} className="text-white" />,
+      url: "/project?title=CollegeSphere&subtitle=Tool for searching college but give better info about college"
     },
     {
-      title: "Campfire Feast",
-      description: "Gourmet s'mores & stories",
-      image: "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=800&q=80",
-      icon: <FaFire size={24} className="text-white" />
+      title: "Yorigin",
+      description: "Site which help competitive programmers to know maang events and their cp ratings",
+      image: "/Yorigin.png",
+      icon: <FaFire size={24} className="text-white" />,
+      url: "/project?title=Yorigin&subtitle=Site which help competitive programmers to know maang events and their cp ratings"
     },
     {
-      title: "Lakeside Retreat",
-      description: "Private dock & canoe rides",
-      image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
-      icon: <FaTint size={24} className="text-white" />
+      title: "Starthub",
+      description: "For student entrepreneurs who want to start, and want to get help from their alumns",
+      image: "/Starthub.png",
+      icon: <FaTint size={24} className="text-white" />,
+      url: "/project?title=Starthub&subtitle=For student entrepreneurs who want to start, and want to get help from their alumns"
     },
     {
-      title: "Mountain Spa",
-      description: "Outdoor sauna & hot tub",
-      image: "https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=800&q=80",
-      icon: <FaHotTub size={24} className="text-white" />
+      title: "KGPLaunchpad",
+      description: "Site which help students get projects and learning form their alumns",
+      image: "/KGPLaunchpad.png",
+      icon: <FaHotTub size={24} className="text-white" />,
+      url: "/project?title=KGPLaunchpad&subtitle=Site which help students get projects and learning form their alumns"
     },
     {
-      title: "Guided Adventure",
-      description: "Expert-led nature tours",
-      image: "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=800&q=80",
-      icon: <FaHiking size={24} className="text-white" />
+      title: "ManimAI",
+      description: "Tool to generate videos helping students to generate codes to shows maths and physics videos",
+      image: "/ManimAI.png",
+      icon: <FaHiking size={24} className="text-white" />,
+      url: "/project?title=ManimAI&subtitle=Tool to generate videos helping students to generate codes to shows maths and physics videos"
     }
   ], []);
 
   const handleOptionClick = (index: number) => {
+    if (typeof window === 'undefined') return;
+    
     const option = options[index];
+    if (!option) {
+      console.error('Option not found at index:', index);
+      return;
+    }
+    
     setActiveIndex(index);
-    const url = new URL('/project', window.location.origin);
-    url.searchParams.set('image', option.image);
-    url.searchParams.set('bg', option.image);
-    url.searchParams.set('title', option.title);
-    url.searchParams.set('subtitle', option.description);
-    url.searchParams.set('returnTo', '/?skipIntro=true');
-    router.push(url.toString());
+    
+    // Build URL parameters
+    const params = new URLSearchParams();
+    params.set('image', option.image);
+    params.set('bg', option.image);
+    params.set('title', option.title);
+    params.set('subtitle', option.description);
+    params.set('returnTo', '/?skipIntro=true');
+    
+    // Use window.location.href to avoid webpack issues with router.push
+    // This forces a full page reload which avoids the webpack module loading error
+    const targetUrl = `/project?${params.toString()}`;
+    window.location.href = targetUrl;
   };
 
   useEffect(() => {

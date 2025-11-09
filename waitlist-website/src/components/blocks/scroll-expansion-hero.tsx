@@ -8,8 +8,8 @@ import {
   TouchEvent,
   WheelEvent,
 } from 'react';
-import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { SafeImage } from '@/components/ui/safe-image';
 
 interface ScrollExpandMediaProps {
   mediaType?: 'video' | 'image';
@@ -49,6 +49,8 @@ const ScrollExpandMedia = ({
   }, [mediaType]);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const handleWheel = (e: WheelEvent) => {
       if (mediaFullyExpanded && e.deltaY < 0 && window.scrollY <= 5) {
         setMediaFullyExpanded(false);
@@ -76,7 +78,7 @@ const ScrollExpandMedia = ({
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      if (!touchStartY) return;
+      if (!touchStartY || typeof window === 'undefined') return;
 
       const touchY = e.touches[0].clientY;
       const deltaY = touchStartY - touchY;
@@ -110,10 +112,12 @@ const ScrollExpandMedia = ({
     };
 
     const handleScroll = (): void => {
-      if (!mediaFullyExpanded) {
+      if (!mediaFullyExpanded && typeof window !== 'undefined') {
         window.scrollTo(0, 0);
       }
     };
+
+    if (typeof window === 'undefined') return;
 
     window.addEventListener('wheel', handleWheel as unknown as EventListener, {
       passive: false,
@@ -132,6 +136,7 @@ const ScrollExpandMedia = ({
     window.addEventListener('touchend', handleTouchEnd as EventListener);
 
     return () => {
+      if (typeof window === 'undefined') return;
       window.removeEventListener(
         'wheel',
         handleWheel as unknown as EventListener
@@ -150,6 +155,8 @@ const ScrollExpandMedia = ({
   }, [scrollProgress, mediaFullyExpanded, touchStartY]);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const checkIfMobile = (): void => {
       setIsMobileState(window.innerWidth < 768);
     };
@@ -157,7 +164,11 @@ const ScrollExpandMedia = ({
     checkIfMobile();
     window.addEventListener('resize', checkIfMobile);
 
-    return () => window.removeEventListener('resize', checkIfMobile);
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', checkIfMobile);
+      }
+    };
   }, []);
 
   const mediaWidth = 300 + scrollProgress * (isMobileState ? 650 : 1250);
@@ -180,7 +191,7 @@ const ScrollExpandMedia = ({
             animate={{ opacity: 1 - scrollProgress }}
             transition={{ duration: 0.1 }}
           >
-            <Image
+            <SafeImage
               src={bgImageSrc}
               alt='Background'
               width={1920}
@@ -269,7 +280,7 @@ const ScrollExpandMedia = ({
                   )
                 ) : (
                   <div className='relative w-full h-full'>
-                    <Image
+                    <SafeImage
                       src={mediaSrc}
                       alt={title || 'Media content'}
                       width={1280}

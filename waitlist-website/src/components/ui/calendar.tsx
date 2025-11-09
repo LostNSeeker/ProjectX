@@ -72,7 +72,7 @@ export function Calendar() {
         </div>
         <div className=" transition-all duration-500 ease-out md:group-hover:-right-12 md:group-hover:top-5">
           <div>
-            <div className="h-full w-full max-w-[550px] rounded-[24px] border border-border-primary p-2 transition-colors duration-100 group-hover:border-indigo-400">
+            <div className="h-full w-full max-w-full sm:max-w-[600px] md:max-w-[650px] rounded-[24px] border border-border-primary p-2 transition-colors duration-100 group-hover:border-indigo-400">
               <div
                 className="h-full rounded-2xl border-2 border-[#A5AEB81F]/10  p-3"
                 style={{ boxShadow: "0px 2px 1.5px 0px #A5AEB852 inset" }}
@@ -86,7 +86,7 @@ export function Calendar() {
                   <span className="h-1 w-1 rounded-full ">&nbsp;</span>
                   <p className="text-xs text-text-tertiary">30 min call</p>
                 </div>
-                <div className="mt-4 grid grid-cols-7 grid-rows-5 gap-1 sm:gap-2 px-2 sm:px-4">
+                <div className="mt-4 grid grid-cols-7 grid-rows-5 gap-1 sm:gap-2 px-2 sm:px-4 w-full">
                   {renderCalendarDays()}
                 </div>
               </div>

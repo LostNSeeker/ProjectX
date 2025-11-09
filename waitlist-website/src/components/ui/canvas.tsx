@@ -131,8 +131,11 @@ function onMousemove(e) {
       ? // @ts-ignore
         ((pos.x = e.touches[0].pageX), (pos.y = e.touches[0].pageY))
       : // @ts-ignore
-        ((pos.x = e.clientX), (pos.y = e.clientY)),
+        ((pos.x = e.clientX), (pos.y = e.clientY));
+    // Only preventDefault for touch events, and only if we can
+    if (e.touches && e.cancelable) {
       e.preventDefault();
+    }
   }
   // @ts-ignore
   function l(e) {
@@ -140,14 +143,15 @@ function onMousemove(e) {
     1 == e.touches.length &&
       ((pos.x = e.touches[0].pageX), (pos.y = e.touches[0].pageY));
   }
-  document.removeEventListener("mousemove", onMousemove),
-    document.removeEventListener("touchstart", onMousemove),
-    document.addEventListener("mousemove", c),
-    document.addEventListener("touchmove", c),
-    document.addEventListener("touchstart", l),
-    c(e),
-    o(),
-    render();
+  document.removeEventListener("mousemove", onMousemove);
+  document.removeEventListener("touchstart", onMousemove);
+  document.addEventListener("mousemove", c);
+  // Use passive: false for touchmove to allow preventDefault
+  document.addEventListener("touchmove", c, { passive: false });
+  document.addEventListener("touchstart", l, { passive: true });
+  c(e);
+  o();
+  render();
 }
 
 function render() {
@@ -205,8 +209,21 @@ function Node() {
 }
 
 export const renderCanvas = function () {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+  
+  const canvasElement = document.getElementById("canvas");
+  if (!canvasElement) {
+    console.warn('Canvas element not found');
+    return;
+  }
+  
   // @ts-ignore
-  ctx = document.getElementById("canvas").getContext("2d");
+  ctx = canvasElement.getContext("2d");
+  if (!ctx) {
+    console.warn('Could not get 2d context');
+    return;
+  }
+  
   ctx.running = true;
   ctx.frame = 1;
   f = new n({
@@ -216,12 +233,14 @@ export const renderCanvas = function () {
     offset: 285,
   });
   document.addEventListener("mousemove", onMousemove);
-  document.addEventListener("touchstart", onMousemove);
-  document.body.addEventListener("orientationchange", resizeCanvas);
+  document.addEventListener("touchstart", onMousemove, { passive: true });
+  if (document.body) {
+    document.body.addEventListener("orientationchange", resizeCanvas);
+  }
   window.addEventListener("resize", resizeCanvas);
   window.addEventListener("focus", () => {
     // @ts-ignore
-    if (!ctx.running) {
+    if (ctx && !ctx.running) {
       // @ts-ignore
       ctx.running = true;
       render();
@@ -229,7 +248,10 @@ export const renderCanvas = function () {
   });
   window.addEventListener("blur", () => {
     // @ts-ignore
-    ctx.running = true;
+    if (ctx) {
+      // @ts-ignore
+      ctx.running = true;
+    }
   });
   resizeCanvas();
 };

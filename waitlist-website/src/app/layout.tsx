@@ -4,8 +4,8 @@ import LenisProvider from "@/components/providers/lenis-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "RemoteFlow - Find Your Dream Remote Full Stack Job",
-  description: "Join RemoteFlow, the ultimate AI-powered platform for remote job seekers in the IT industry. Discover thousands of remote opportunities tailored for Full Stack Engineers, Frontend, Backend, and DevOps professionals worldwide.",
+  title: "ProjectX",
+  description: "Join , the ultimate AI-powered platform for remote job seekers in the IT industry. Discover thousands of remote opportunities tailored for Full Stack Engineers, Frontend, Backend, and DevOps professionals worldwide.",
   keywords: [
     "remote jobs",
     "full stack engineer",
@@ -20,22 +20,22 @@ export const metadata: Metadata = {
     "work from home",
     "tech jobs"
   ],
-  authors: [{ name: "RemoteFlow Team" }],
-  creator: "RemoteFlow",
-  publisher: "RemoteFlow",
+  authors: [{ name: "Devlaunch Team" }],
+  creator: "Akshat Srivastava",
+  publisher: "Akshat Srivastava",
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
-  metadataBase: new URL("https://remoteflow.com"),
+  metadataBase: new URL("https://ProjectX.com"),
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "RemoteFlow - Find Your Dream Remote Full Stack Job",
-    description: "Join RemoteFlow, the ultimate AI-powered platform for remote job seekers in the IT industry. Discover thousands of remote opportunities tailored for Full Stack Engineers worldwide.",
-    url: "https://remoteflow.com",
+    title: " Find Your Dream Remote Full Stack Job",
+    description: "Join, the ultimate AI-powered platform for remote job seekers in the IT industry. Discover thousands of remote opportunities tailored for Full Stack Engineers worldwide.",
+    url: "https://ProjectX.com",
     siteName: "RemoteFlow",
     images: [
       {
@@ -84,14 +84,22 @@ export default function RootLayout({
         <meta name="theme-color" content="#000000" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
-      <body className="antialiased">
+      <body className="antialiased" suppressHydrationWarning>
         <LenisProvider>
           {children}
         </LenisProvider>
-        {/* Global cursor canvas overlay */}
-        <canvas id="canvas" className="pointer-events-none fixed inset-0 z-[9999]" style={{ width: "100vw", height: "100vh" }} />
-        <Script id="init-global-canvas" strategy="afterInteractive">
-          {`window.renderInteractiveCanvas && window.renderInteractiveCanvas();`}
+        {/* Global cursor canvas overlay - only load on client side */}
+        <canvas id="canvas" className="pointer-events-none fixed inset-0 z-[9999] w-screen h-screen" suppressHydrationWarning />
+        <Script id="init-global-canvas" strategy="lazyOnload">
+          {`
+            if (typeof window !== 'undefined' && window.renderInteractiveCanvas) {
+              try {
+                window.renderInteractiveCanvas();
+              } catch (error) {
+                console.warn('Canvas initialization failed:', error);
+              }
+            }
+          `}
         </Script>
       </body>
     </html>

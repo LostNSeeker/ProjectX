@@ -150,8 +150,14 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
 
   const pixelSteps = 6
   const drawAsPoints = true
+  const wordDisplayDuration = 420 // Frames per word (420 frames = ~7 seconds at 60fps)
+  const transitionDuration = 80 // Frames for transition between words
 
   const generateRandomPos = (x: number, y: number, mag: number): Vector2D => {
+    if (typeof window === 'undefined') {
+      return { x, y };
+    }
+    
     const randomX = Math.random() * window.innerWidth
     const randomY = Math.random() * window.innerHeight
 
@@ -173,6 +179,8 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
   }
 
   const nextWord = (word: string, canvas: HTMLCanvasElement) => {
+    if (typeof window === 'undefined') return;
+    
     // Create off-screen canvas for text rendering
     const offscreenCanvas = document.createElement("canvas")
     const rect = canvas.getBoundingClientRect()
@@ -183,18 +191,25 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
     
     offscreenCanvas.width = width
     offscreenCanvas.height = height
-    const offscreenCtx = offscreenCanvas.getContext("2d")!
+    const offscreenCtx = offscreenCanvas.getContext("2d")
+    if (!offscreenCtx) return
 
     // Calculate responsive font size with mobile considerations
-    const fontSize = Math.min(width, height) * 0.12
-    const minFontSize = 24
-    const maxFontSize = 120
+    // Increased font size for better visibility
+    const fontSize = Math.min(width, height) * 0.15
+    const minFontSize = 32
+    const maxFontSize = 140
     const finalFontSize = Math.max(minFontSize, Math.min(fontSize, maxFontSize))
     
     offscreenCtx.fillStyle = "white"
-    offscreenCtx.font = `bold ${finalFontSize}px Arial`
+    offscreenCtx.font = `bold ${finalFontSize}px Arial, sans-serif`
     offscreenCtx.textAlign = "center"
     offscreenCtx.textBaseline = "middle"
+    
+    // Add text stroke for better visibility
+    offscreenCtx.strokeStyle = "rgba(255, 255, 255, 0.3)"
+    offscreenCtx.lineWidth = 2
+    offscreenCtx.strokeText(word, width / 2, height / 2)
     offscreenCtx.fillText(word, width / 2, height / 2)
 
     const imageData = offscreenCtx.getImageData(0, 0, width, height)
@@ -278,8 +293,8 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
     const ctx = canvas.getContext("2d")!
     const particles = particlesRef.current
 
-    // Background with motion blur
-    ctx.fillStyle = "rgba(0, 0, 0, 0.1)"
+    // Background with motion blur - reduced opacity for smoother transitions
+    ctx.fillStyle = "rgba(0, 0, 0, 0.08)"
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
     // Update and draw particles
@@ -291,10 +306,10 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
       // Remove dead particles that are out of bounds
       if (particle.isKilled) {
         if (
-          particle.pos.x < 0 ||
-          particle.pos.x > canvas.width ||
-          particle.pos.y < 0 ||
-          particle.pos.y > canvas.height
+          particle.pos.x < -100 ||
+          particle.pos.x > canvas.width + 100 ||
+          particle.pos.y < -100 ||
+          particle.pos.y > canvas.height + 100
         ) {
           particles.splice(i, 1)
         }
@@ -313,9 +328,24 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
       })
     }
 
-    // Auto-advance words
+    // Auto-advance words with smooth transitions
     frameCountRef.current++
-    if (frameCountRef.current % 180 === 0) {
+    const totalFramesPerCycle = wordDisplayDuration + transitionDuration
+    const cyclePosition = frameCountRef.current % totalFramesPerCycle
+    
+    // Start transition when word display duration ends
+    if (cyclePosition === wordDisplayDuration && particles.length > 0) {
+      // Start transition: kill current particles smoothly
+      particles.forEach((particle) => {
+        if (!particle.isKilled) {
+          particle.kill(canvas.width, canvas.height)
+        }
+      })
+    }
+    
+    // Show next word at the start of a new cycle (after transition completes)
+    // This happens when cyclePosition wraps back to 0, but only after the first cycle
+    if (cyclePosition === 0 && frameCountRef.current >= totalFramesPerCycle) {
       wordIndexRef.current = (wordIndexRef.current + 1) % words.length
       nextWord(words[wordIndexRef.current], canvas)
     }
@@ -325,27 +355,43 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
 
   useEffect(() => {
     const canvas = canvasRef.current
-    if (!canvas) return
+    if (!canvas || typeof window === 'undefined') return
 
     // Set canvas dimensions based on screen size
     const updateCanvasSize = () => {
+      if (!canvas) return
       const rect = canvas.getBoundingClientRect()
       canvas.width = rect.width * window.devicePixelRatio
       canvas.height = rect.height * window.devicePixelRatio
       
-      const ctx = canvas.getContext("2d")!
-      ctx.scale(window.devicePixelRatio, window.devicePixelRatio)
+      const ctx = canvas.getContext("2d")
+      if (ctx) {
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio)
+      }
     }
 
     updateCanvasSize()
     window.addEventListener('resize', updateCanvasSize)
 
-    // Initialize with first word after a delay
-    const initTimer = setTimeout(() => {
-      nextWord(words[0], canvas)
-    }, 500)
+    // Initialize with first word immediately after canvas is ready
+    // Use requestAnimationFrame to ensure canvas is fully rendered
+    let initFrame: number;
+    let hasInitialized = false;
+    const initWord = () => {
+      if (canvas && !hasInitialized) {
+        hasInitialized = true
+        nextWord(words[0], canvas)
+        // Start frame count at 0 so timing is correct
+        frameCountRef.current = 0
+      }
+    }
+    
+    // Wait a frame to ensure canvas is ready, then show first word
+    initFrame = requestAnimationFrame(() => {
+      initFrame = requestAnimationFrame(initWord)
+    })
 
-    // Start animation
+    // Start animation loop
     animate()
 
     // Mouse event handlers
@@ -378,7 +424,9 @@ export function ParticleTextEffect({ words = DEFAULT_WORDS }: ParticleTextEffect
     canvas.addEventListener("contextmenu", handleContextMenu)
 
     return () => {
-      clearTimeout(initTimer)
+      if (initFrame) {
+        cancelAnimationFrame(initFrame)
+      }
       window.removeEventListener('resize', updateCanvasSize)
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current)

@@ -83,8 +83,16 @@ export const AnimatedTestimonials = ({
                   }}
                   className="absolute inset-0 origin-bottom"
                 >
-                  <div className="h-full w-full rounded-3xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center text-8xl">
-                    {testimonial.src}
+                  <div className="h-full w-full rounded-3xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center overflow-hidden">
+                    {testimonial.src.startsWith('http') ? (
+                      <img 
+                        src={testimonial.src} 
+                        alt={testimonial.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="text-8xl">{testimonial.src}</div>
+                    )}
                   </div>
                 </motion.div>
               ))}

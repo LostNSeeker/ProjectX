@@ -9,7 +9,6 @@ export function SplineSceneBasic() {
     <Card className="w-full h-screen bg-black relative overflow-hidden border-0">
       <Spotlight
         className="-top-40 left-0 md:left-60 md:-top-20"
-        fill="white"
       />
       
       <div className="flex h-full items-center">
